@@ -1,0 +1,34 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  branches:
+    include:
+    - '*' 
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  solutionPath: ./Source/Sundew.Packaging.Update.sln
+  buildConfiguration: 'Release'
+  source: 'https://api.nuget.org/v3/index.json'
+  pushSource: 'null'
+
+steps:
+- script: dotnet build $(solutionPath) --verbosity normal --configuration $(buildConfiguration) -p:'SppSourceName=$(Build.SourceBranch)' -p:'SppProductionSource=refs/heads/main|$(source)' -p:'SppIntegrationSource=refs/heads/release/.+|$(source)' -p:'SppAllowLocalSource=false' -p:'SppEnablePublish=false' -p:'SppPublishLogFormats=##vso[task.setvariable variable=pushSource]{2}'
+  displayName: 'dotnet build $(buildConfiguration)'
+
+- script: dotnet test $(solutionPath) --verbosity normal --configuration $(buildConfiguration) --no-build
+  displayName: 'dotnet test $(buildConfiguration)'
+
+- task: CopyFiles@2
+  inputs:
+    Contents: '**/*.nupkg'
+    TargetFolder: $(Build.ArtifactStagingDirectory)
+
+- script: dotnet nuget push '$(Build.ArtifactStagingDirectory)/**/*.nupkg' -s '$(pushSource)' -k '$(SppApiKey)'
+  condition: ne(variables.pushSource, 'null')
+  displayName: 'dotnet nuget push'

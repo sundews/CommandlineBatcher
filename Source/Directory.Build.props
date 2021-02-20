@@ -1,0 +1,8 @@
+<Project>
+ <PropertyGroup>
+   <Deterministic>true</Deterministic>
+   <Version>1.0</Version>
+   <OutputPath>bin/$(Configuration)</OutputPath>
+   <Nullable>enable</Nullable>
+ </PropertyGroup>
+</Project>
