@@ -25,7 +25,7 @@ namespace CommandLineBatcher
             this.commands = commands;
             this.values = values;
             this.RootDirectory = rootDirectory ?? Directory.GetCurrentDirectory();
-            this.BatchSeparator = batchSeparator ?? "|";
+            this.BatchValueSeparator = batchSeparator ?? "|";
         }
 
         public BatchArguments()
@@ -39,13 +39,14 @@ namespace CommandLineBatcher
 
         public IReadOnlyList<Values> Values => this.values;
 
-        public string? BatchSeparator { get; private set; }
+        public string? BatchValueSeparator { get; private set; }
 
         public void Configure(IArgumentsBuilder argumentsBuilder)
         {
-            argumentsBuilder.AddRequiredList("c", "commands", this.commands, this.SerializeCommand, this.DeserializeCommand, @$"The commands to be executed{Environment.NewLine}Format: ""{{command}}[|{{arguments}}]""...""{Environment.NewLine}Values can inject values by position with {{number}}", true);
-            argumentsBuilder.AddOptional("s", "batch-separator", () => this.BatchSeparator, s => this.BatchSeparator = s, "The batch separator");
-            argumentsBuilder.AddRequiredList("v", "values", this.values, this.SerializeBatch, this.DeserializeBatch, "The values to be passed per command", true);
+            argumentsBuilder.OptionsHelpOrder = OptionsHelpOrder.AsAdded;
+            argumentsBuilder.AddRequiredList("c", "commands", this.commands, this.SerializeCommand, this.DeserializeCommand, @$"The commands to be executed{Environment.NewLine}Format: ""{{command}}[|{{arguments}}]""...{Environment.NewLine}Values can inject values by position with {{number}}", true);
+            argumentsBuilder.AddOptional("s", "batch-value-separator", () => this.BatchValueSeparator, s => this.BatchValueSeparator = s, "The batch value separator");
+            argumentsBuilder.AddRequiredList("v", "values", this.values, this.SerializeBatch, this.DeserializeBatch, $"The batches to be passed for each command{Environment.NewLine}Each batch can contain multiple values separated by the batch separator", true);
             argumentsBuilder.AddOptional("d", "root-directory", () => this.RootDirectory, s => this.RootDirectory = s, "The directory to search for projects", true, defaultValueText: "Current directory");
         }
 
@@ -67,13 +68,13 @@ namespace CommandLineBatcher
 
         private Values DeserializeBatch(string arg1, CultureInfo arg2)
         {
-            return new Values(arg1.Split(this.BatchSeparator, StringSplitOptions.RemoveEmptyEntries));
+            return new Values(arg1.Split(this.BatchValueSeparator, StringSplitOptions.RemoveEmptyEntries));
         }
 
         private string SerializeBatch(Values arg1, CultureInfo arg2)
         {
             return arg1.Arguments.AggregateToStringBuilder(
-                (builder, s) => builder.Append(s).Append(this.BatchSeparator),
+                (builder, s) => builder.Append(s).Append(this.BatchValueSeparator),
                 builder => builder.ToStringFromEnd(1));
         }
     }

@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sundew.CommandLine" Version="5.0.1" />
+    <PackageReference Include="Sundew.CommandLine" Version="5.0.2-pre-u20210226-210317" />
   </ItemGroup>
 
 </Project>
