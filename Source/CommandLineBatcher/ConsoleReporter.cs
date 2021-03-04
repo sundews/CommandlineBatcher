@@ -5,15 +5,53 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandLineBatcher
+namespace CommandlineBatcher
 {
     using System;
+    using CommandlineBatcher.Diagnostics;
 
     internal class ConsoleReporter : IBatchRunnerReporter
     {
-        public void ReportMessage(string line)
+        private readonly Verbosity verbosity;
+
+        public ConsoleReporter(Verbosity verbosity)
         {
+            this.verbosity = verbosity;
+        }
+
+        public void Started(IProcess process)
+        {
+            if (this.verbosity == Verbosity.Detailed || this.verbosity == Verbosity.Normal)
+            {
+                Console.WriteLine($"Started: {process.StartInfo.FileName} {process.StartInfo.Arguments} ({process.Id})");
+            }
+        }
+
+        public void ReportMessage(IProcess process, string line)
+        {
+            if (this.verbosity == Verbosity.Detailed)
+            {
+                Console.WriteLine($"{process.StartInfo.FileName} ({process.Id}) reported:{Environment.NewLine}{line}");
+                return;
+            }
+
             Console.WriteLine(line);
+        }
+
+        public void ProcessExited(IProcess process)
+        {
+            if (this.verbosity == Verbosity.Detailed)
+            {
+                Console.WriteLine($"{process.StartInfo.FileName} ({process.Id}) exited with exit code: {process.ExitCode}");
+            }
+        }
+
+        public void Error(IProcess process)
+        {
+            if (this.verbosity != Verbosity.Quiet)
+            {
+                Console.WriteLine($@"{process.StartInfo.FileName} {process.StartInfo.Arguments} ({process.Id}) failed with {process.ExitCode}");
+            }
         }
     }
 }

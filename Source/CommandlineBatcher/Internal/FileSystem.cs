@@ -1,16 +1,19 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IProcessRunner.cs" company="Hukano">
+// <copyright file="FileSystem.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Diagnostics
+namespace CommandlineBatcher.Internal
 {
-    using System.Diagnostics;
+    using System.IO;
 
-    public interface IProcessRunner
+    internal class FileSystem : IFileSystem
     {
-        IProcess? Run(ProcessStartInfo processStartInfo);
+        public string ReadAllText(string path)
+        {
+            return File.ReadAllText(path);
+        }
     }
 }

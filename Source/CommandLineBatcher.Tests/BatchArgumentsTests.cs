@@ -1,4 +1,4 @@
-namespace CommandLineBatcher.Tests
+namespace CommandlineBatcher.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -18,12 +18,12 @@ namespace CommandLineBatcher.Tests
 
             testee.Parse(data.CommandLine);
 
-            arguments.Values.Should().Equal(data.ExpectedResult, (a, e) => a.Arguments.SequenceEqual(e));
+            arguments.Batches.Should().Equal(data.ExpectedResult, (a, e) => a.Arguments.SequenceEqual(e));
         }
 
         public static IEnumerable<object[]> Values()
         {
-            yield return new[] { new Data("-c git -v 1.0.1|Sundew.CommandLine 2.0.1|Sundew.Base", new[] { new[] { "1.0.1", "Sundew.CommandLine" }, new[] { "2.0.1", "Sundew.Base" } }) };
+            yield return new[] { new Data("-c git -b 1.0.1|Sundew.CommandLine 2.0.1|Sundew.Base", new[] { new[] { "1.0.1", "Sundew.CommandLine" }, new[] { "2.0.1", "Sundew.Base" } }) };
         }
 
         public record Data(string CommandLine, string[][] ExpectedResult);

@@ -5,13 +5,14 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandLineBatcher.Tests
+namespace CommandlineBatcher.Tests
 {
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
-    using CommandLineBatcher.Diagnostics;
+    using CommandlineBatcher.Diagnostics;
+    using CommandlineBatcher.Internal;
     using FluentAssertions;
     using Moq;
     using Xunit;
@@ -22,7 +23,7 @@ namespace CommandLineBatcher.Tests
         public async Task RunAsync()
         {
             var processRunner = New.Mock<IProcessRunner>();
-            var testee = new BatchRunner(processRunner, New.Mock<IBatchRunnerReporter>());
+            var testee = new BatchRunner(processRunner, New.Mock<IFileSystem>(), New.Mock<IBatchRunnerReporter>());
             var expected = new[] { MockTag("1.0.1", "Sundew.CommandLine"), MockPush("1.0.1", "Sundew.CommandLine"), MockTag("2.0.1", "Sundew.Base"), MockPush("2.0.1", "Sundew.Base") };
             processRunner.Setup(x => x.Run(It.IsAny<ProcessStartInfo>())).Returns<ProcessStartInfo>(
                 psi =>
@@ -36,7 +37,8 @@ namespace CommandLineBatcher.Tests
             var result = await testee.RunAsync(
                 new BatchArguments(
                     new List<Command> { new("git", @"tag {0}-{1} -a -m ""Released {1} {0}"""), new("git", "push {0}-{1}") },
-                new List<Values> { new("1.0.1", "Sundew.CommandLine"), new("2.0.1", "Sundew.Base") }));
+                    null,
+                    new List<Values> { new("1.0.1", "Sundew.CommandLine"), new("2.0.1", "Sundew.Base") }));
 
             result.Should().Equal(expected, (p1, p2) => p1.StartInfo.FileName == p2.StartInfo.FileName && p1.StartInfo.Arguments == p2.StartInfo.Arguments);
         }

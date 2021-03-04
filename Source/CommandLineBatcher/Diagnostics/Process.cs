@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandLineBatcher.Diagnostics
+namespace CommandlineBatcher.Diagnostics
 {
     using System;
     using System.Diagnostics;
@@ -44,9 +44,14 @@ namespace CommandLineBatcher.Diagnostics
 
         public StreamWriter StandardInput => this.process.StandardInput;
 
-        public Task WaitForExistAsync(CancellationToken cancellationToken)
+        public Task WaitForExitAsync(CancellationToken cancellationToken)
         {
             return this.process.WaitForExitAsync(cancellationToken);
+        }
+
+        public void WaitForExit()
+        {
+            this.process.WaitForExit();
         }
     }
 }

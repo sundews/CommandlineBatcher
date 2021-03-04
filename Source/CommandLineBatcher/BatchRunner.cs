@@ -5,59 +5,102 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandLineBatcher
+namespace CommandlineBatcher
 {
+    using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Threading;
+    using System.Linq;
     using System.Threading.Tasks;
-    using CommandLineBatcher.Diagnostics;
-    using Sundew.Base.Collections;
-    using Process = CommandLineBatcher.Diagnostics.Process;
+    using CommandlineBatcher.Diagnostics;
+    using CommandlineBatcher.Internal;
+    using Sundew.CommandLine.Extensions;
 
     public class BatchRunner
     {
         private readonly IProcessRunner processRunner;
+        private readonly IFileSystem fileSystem;
         private readonly IBatchRunnerReporter batchRunnerReporter;
 
-        public BatchRunner(IProcessRunner processRunner, IBatchRunnerReporter batchRunnerReporter)
+        public BatchRunner(IProcessRunner processRunner, IFileSystem fileSystem, IBatchRunnerReporter batchRunnerReporter)
         {
             this.processRunner = processRunner;
+            this.fileSystem = fileSystem;
             this.batchRunnerReporter = batchRunnerReporter;
         }
 
-        public async Task<IReadOnlyList<IProcess>> RunAsync(BatchArguments batchArguments)
+        public Task<IReadOnlyCollection<IProcess>> RunAsync(BatchArguments batchArguments)
         {
-            var processes = new List<IProcess>();
-            foreach (var values in batchArguments.Values)
+            var processes = new ConcurrentQueue<IProcess>();
+            var batches = batchArguments.Batches?.ToList() ?? new List<Values>();
+            if (batchArguments.BatchesFiles != null)
             {
-                foreach (var command in batchArguments.Commands)
+                foreach (var valuesFile in batchArguments.BatchesFiles)
                 {
-                    var process = this.processRunner.Run(new ProcessStartInfo(command.Executable, string.Format(command.Arguments, values.Arguments))
+                    var batchesText = this.fileSystem.ReadAllText(valuesFile).Trim().AsMemory().ParseCommandLineArguments();
+                    foreach (var batch in batchesText)
                     {
-                        WorkingDirectory = batchArguments.RootDirectory,
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                    });
-                    if (process != null)
-                    {
-                        processes.Add(process);
-                        while (!process.StandardOutput.EndOfStream)
-                        {
-                            var line = await process.StandardOutput.ReadLineAsync();
-                            if (line != null)
-                            {
-                                this.batchRunnerReporter.ReportMessage(line);
-                            }
-                        }
-
-                        await process.WaitForExistAsync(CancellationToken.None);
+                        batches.Add(Values.From(batch, batchArguments.BatchValueSeparator));
                     }
                 }
             }
 
-            return processes;
+            var commandsDegreeOfParallelism = batchArguments.Parallelize == Parallelize.Commands ? batchArguments.MaxDegreeOfParallelism : 1;
+            var batchesDegreeOfParallelism = batchArguments.Parallelize == Parallelize.Batches ? batchArguments.MaxDegreeOfParallelism : 1;
+            if (batchArguments.ExecutionOrder == ExecutionOrder.Batch)
+            {
+                Parallel.ForEach(
+                    batches,
+                    new ParallelOptions { MaxDegreeOfParallelism = batchesDegreeOfParallelism },
+                    (values, _) =>
+                    {
+                        Parallel.ForEach(batchArguments.Commands,
+                            new ParallelOptions { MaxDegreeOfParallelism = commandsDegreeOfParallelism },
+                            (command, _) => RunCommand(batchArguments, command, values, processes));
+                    });
+            }
+            else
+            {
+                Parallel.ForEach(batchArguments.Commands,
+                    new ParallelOptions { MaxDegreeOfParallelism = commandsDegreeOfParallelism },
+                    (command, _) =>
+                    {
+                        Parallel.ForEach(batches,
+                            new ParallelOptions { MaxDegreeOfParallelism = batchesDegreeOfParallelism },
+                            (values, _) => RunCommand(batchArguments, command, values, processes));
+                    });
+            }
+
+            return Task.FromResult<IReadOnlyCollection<IProcess>>(processes);
+        }
+
+        private void RunCommand(BatchArguments batchArguments, Command command, Values values, ConcurrentQueue<IProcess> processes)
+        {
+            var processStartInfo = new ProcessStartInfo(command.Executable, string.Format(command.Arguments, values.Arguments))
+            {
+                WorkingDirectory = batchArguments.RootDirectory,
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+            };
+            var process = this.processRunner.Run(processStartInfo);
+            if (process != null)
+            {
+                this.batchRunnerReporter.Started(process);
+                processes.Enqueue(process);
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    var line = process.StandardOutput.ReadLine();
+                    if (line != null)
+                    {
+                        this.batchRunnerReporter.ReportMessage(process, line);
+                    }
+                }
+
+                process.WaitForExit();
+                this.batchRunnerReporter.ProcessExited(process);
+            }
         }
     }
 }

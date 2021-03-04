@@ -9,10 +9,18 @@
     <Authors>Kim Hugener-Ohlsen</Authors>
     <Company>Hukano</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Kim Hugener-Ohlsen</Copyright>
+    <Description>Execute batches of multiple commands in a single command line.</Description>
+    <PackageProjectUrl>https://github.com/hugener/CommandlineBatcher</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hugener/CommandlineBatcher</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sundew.CommandLine" Version="5.0.2-pre-u20210226-210317" />
+    <PackageReference Include="Sundew.CommandLine" Version="6.0.0-pre-u20210304-160220" />
+    <PackageReference Include="Sundew.Packaging.Publish" Version="4.0.0-pre-u20210304-124930">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

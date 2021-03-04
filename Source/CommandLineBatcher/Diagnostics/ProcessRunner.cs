@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandLineBatcher.Diagnostics
+namespace CommandlineBatcher.Diagnostics
 {
     using System.Diagnostics;
 

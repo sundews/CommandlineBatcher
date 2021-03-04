@@ -1,16 +1,15 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IProcessRunner.cs" company="Hukano">
+// <copyright file="Parallelize.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Diagnostics
+namespace CommandlineBatcher
 {
-    using System.Diagnostics;
-
-    public interface IProcessRunner
+    public enum Parallelize
     {
-        IProcess? Run(ProcessStartInfo processStartInfo);
+        Commands,
+        Batches,
     }
 }

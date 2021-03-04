@@ -1,15 +1,16 @@
-﻿namespace CommandLineBatcher
+﻿namespace CommandlineBatcher
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using CommandLineBatcher.Diagnostics;
+    using CommandlineBatcher.Diagnostics;
+    using CommandlineBatcher.Internal;
     using Sundew.Base.Computation;
     using Sundew.CommandLine;
 
     class Program
     {
-        static async Task Main()
+        static async Task<int> Main()
         {
             Console.WriteLine(Environment.CommandLine);
             var commandLineParser = new CommandLineParser<int, int>();
@@ -19,17 +20,21 @@
             if (!result)
             {
                 result.WriteToConsole();
+                return result.Error.Info;
             }
+
+            return result.Value;
         }
 
         private static async ValueTask<Result<int, ParserError<int>>> Handle(BatchArguments arguments)
         {
-            var batchRunner = new BatchRunner(new ProcessRunner(), new ConsoleReporter());
+            var consoleReporter = new ConsoleReporter(arguments.Verbosity);
+            var batchRunner = new BatchRunner(new ProcessRunner(), new FileSystem(), consoleReporter);
             var processes = await batchRunner.RunAsync(arguments);
             var failedProcesses = processes.Where(x => x.ExitCode != 0).ToList();
-            foreach (var process in failedProcesses) 
+            foreach (var process in failedProcesses)
             {
-                Console.WriteLine($@"{process.StartInfo.FileName} {process.StartInfo.Arguments} failed with {process.ExitCode}");
+                consoleReporter.Error(process);
             }
 
             return Result.From(failedProcesses.Count == 0, 0, new ParserError<int>(-1));

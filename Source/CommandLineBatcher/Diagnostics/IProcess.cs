@@ -5,7 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandLineBatcher.Diagnostics
+namespace CommandlineBatcher.Diagnostics
 {
     using System;
     using System.Diagnostics;
@@ -15,26 +15,30 @@ namespace CommandLineBatcher.Diagnostics
 
     public interface IProcess
     {
-        public int ExitCode { get; }
+        int ExitCode { get; }
 
-        public bool HasExited { get; }
+        bool HasExited { get; }
 
-        public DateTime StartTime { get; }
+        DateTime StartTime { get; }
 
-        public DateTime ExitTime { get; }
+        DateTime ExitTime { get; }
 
-        public int Id { get; }
+        int Id { get; }
 
-        public string MachineName { get; }
+        string MachineName { get; }
 
-        public StreamReader StandardOutput { get; }
+        StreamReader StandardOutput { get; }
 
-        public StreamReader StandardError { get; }
+        StreamReader StandardError { get; }
 
-        public StreamWriter StandardInput { get; }
+        StreamWriter StandardInput { get; }
+
         ProcessStartInfo StartInfo { get; }
+
         string ProcessName { get; }
 
-        public Task WaitForExistAsync(CancellationToken cancellationToken);
+        Task WaitForExitAsync(CancellationToken cancellationToken);
+
+        void WaitForExit();
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IBatchRunnerReporter.cs" company="Hukano">
+// <copyright file="Values.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -7,14 +7,20 @@
 
 namespace CommandlineBatcher
 {
-    using CommandlineBatcher.Diagnostics;
+    using System;
 
-    public interface IBatchRunnerReporter
+    public class Values
     {
-        void Started(IProcess process);
+        public Values(params string[] arguments)
+        {
+            this.Arguments = arguments;
+        }
 
-        void ReportMessage(IProcess process, string line);
+        public string[] Arguments { get; }
 
-        void ProcessExited(IProcess process);
+        public static Values From(string value, string batchValueSeparator)
+        {
+            return new(value.Split(batchValueSeparator, StringSplitOptions.RemoveEmptyEntries));
+        }
     }
 }
