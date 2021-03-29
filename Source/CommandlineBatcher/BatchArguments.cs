@@ -12,7 +12,7 @@ namespace CommandlineBatcher
     using System.Globalization;
     using System.IO;
     using Sundew.Base.Collections;
-    using Sundew.Base.Numeric;
+    using Sundew.Base.Primitives.Numeric;
     using Sundew.Base.Text;
     using Sundew.CommandLine;
 
@@ -25,9 +25,11 @@ namespace CommandlineBatcher
 
         public BatchArguments(
             List<Command> commands,
+            BatchSeparation batchSeparation = BatchSeparation.CommandLine,
             string? batchSeparator = null,
             List<Values>? batches = null,
             List<string>? batchesFiles = null,
+            string? condition = null,
             string? rootDirectory = null,
             ExecutionOrder executionOrder = ExecutionOrder.Batch,
             int maxDegreeOfParallelism = 1,
@@ -37,7 +39,9 @@ namespace CommandlineBatcher
             this.commands = commands;
             this.batches = batches;
             this.batchesFiles = batchesFiles;
+            this.BatchSeparation = batchSeparation;
             this.BatchValueSeparator = batchSeparator ?? "|";
+            this.Condition = condition;
             this.RootDirectory = rootDirectory ?? Directory.GetCurrentDirectory();
             this.MaxDegreeOfParallelism = maxDegreeOfParallelism;
             this.Parallelize = parallelize;
@@ -46,7 +50,7 @@ namespace CommandlineBatcher
         }
 
         public BatchArguments()
-            : this(new List<Command>(), null, new List<Values>(), new List<string>())
+            : this(new List<Command>(), BatchSeparation.CommandLine, null, new List<Values>(), new List<string>(), null)
         {
         }
 
@@ -58,7 +62,11 @@ namespace CommandlineBatcher
 
         public IReadOnlyList<Values>? Batches => this.batches;
 
+        public BatchSeparation BatchSeparation { get; private set; }
+
         public string BatchValueSeparator { get; private set; }
+
+        public string? Condition { get; private set; }
 
         public int MaxDegreeOfParallelism { get; private set; }
 
@@ -72,10 +80,12 @@ namespace CommandlineBatcher
         {
             argumentsBuilder.OptionsHelpOrder = OptionsHelpOrder.AsAdded;
             argumentsBuilder.AddRequiredList("c", "commands", this.commands, this.SerializeCommand, this.DeserializeCommand, @$"The commands to be executed{Environment.NewLine}Format: ""{{command}}[|{{arguments}}]""...{Environment.NewLine}Values can be injected by position with {{number}}", true);
-            argumentsBuilder.AddOptional("s", "batch-value-separator", () => this.BatchValueSeparator, s => this.BatchValueSeparator = s, "The batch value separator");
+            argumentsBuilder.AddOptionalEnum("bs", "batch-separation", () => this.BatchSeparation, s => this.BatchSeparation = s, "Specifies how batches are separated: {0}");
+            argumentsBuilder.AddOptional("bvs", "batch-value-separator", () => this.BatchValueSeparator, s => this.BatchValueSeparator = s, "The batch value separator");
             argumentsBuilder.RequireAnyOf("Batches with values", x => x
                 .AddList("b", "batches", this.batches!, this.SerializeBatch, this.DeserializeBatch, $"The batches to be passed for each command{Environment.NewLine}Each batch can contain multiple values separated by the batch value separator", true)
                 .AddList("bf", "batches-files", this.batchesFiles!, "A list of files containing batches", true));
+            argumentsBuilder.AddOptional(null, "if", () => this.Condition, c => this.Condition = c, "A condition to check if the batch should run" , true);
             argumentsBuilder.AddOptional("d", "root-directory", () => this.RootDirectory, s => this.RootDirectory = s, "The directory to search for projects", true, defaultValueText: "Current directory");
             argumentsBuilder.AddOptionalEnum("e", "execution-order", () => this.ExecutionOrder, v  => this.ExecutionOrder = v, $"Specifies whether all commands are executed for the first {{1}} before moving to the next batch{Environment.NewLine}or the first {{2}} is executed for all batches before moving to the next command{Environment.NewLine}- Finish first {{1}} first{Environment.NewLine}- Finish first {{2}} first");
             argumentsBuilder.AddOptional("mp", "max-parallelism", () => this.MaxDegreeOfParallelism.ToString(), this.DeserializeMaxParallelism, @$"The degree of parallel execution (1-{Environment.ProcessorCount}){Environment.NewLine}Specify ""all"" for number of cores.");
@@ -106,9 +116,7 @@ namespace CommandlineBatcher
 
         private string SerializeBatch(Values values, CultureInfo arg2)
         {
-            return values.Arguments.AggregateToStringBuilder(
-                (builder, s) => builder.Append(s).Append(this.BatchValueSeparator),
-                builder => builder.ToStringFromEnd(1));
+            return values.Arguments.AggregateToString(this.BatchValueSeparator);
         }
 
         private void DeserializeMaxParallelism(string s)

@@ -3,7 +3,7 @@ namespace CommandlineBatcher.Tests
     using System.Collections.Generic;
     using System.Linq;
     using FluentAssertions;
-    using Sundew.Base.Computation;
+    using Sundew.Base.Primitives.Computation;
     using Sundew.CommandLine;
     using Xunit;
 
@@ -11,7 +11,7 @@ namespace CommandlineBatcher.Tests
     {
         [Theory]
         [MemberData(nameof(Values))]
-        public void Test1(Data data)
+        public void Parse_Then_ArgumentsShouldBeParsed(Data data)
         {
             var testee = new CommandLineParser<int, int>();
             var arguments = testee.WithArguments(new BatchArguments(), arguments => Result.Success(0));

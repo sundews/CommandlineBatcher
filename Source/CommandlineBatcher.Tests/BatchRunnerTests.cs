@@ -19,11 +19,20 @@ namespace CommandlineBatcher.Tests
 
     public class BatchRunnerTests
     {
-        [Fact]
-        public async Task RunAsync()
+        private readonly IProcessRunner processRunner;
+        private readonly IFileSystem fileSystem;
+        private readonly BatchRunner testee;
+
+        public BatchRunnerTests()
         {
-            var processRunner = New.Mock<IProcessRunner>();
-            var testee = new BatchRunner(processRunner, New.Mock<IFileSystem>(), New.Mock<IBatchRunnerReporter>());
+            this.processRunner = New.Mock<IProcessRunner>();
+            this.fileSystem = New.Mock<IFileSystem>();
+            this.testee = new BatchRunner(this.processRunner, this.fileSystem, new ConditionEvaluator(New.Mock<IConditionEvaluatorReporter>()),New.Mock<IBatchRunnerReporter>());
+        }
+
+        [Fact]
+        public async Task RunAsync_Then_ResultShouldContainExpectedProcesses()
+        {
             var expected = new[] { MockTag("1.0.1", "Sundew.CommandLine"), MockPush("1.0.1", "Sundew.CommandLine"), MockTag("2.0.1", "Sundew.Base"), MockPush("2.0.1", "Sundew.Base") };
             processRunner.Setup(x => x.Run(It.IsAny<ProcessStartInfo>())).Returns<ProcessStartInfo>(
                 psi =>
@@ -37,8 +46,37 @@ namespace CommandlineBatcher.Tests
             var result = await testee.RunAsync(
                 new BatchArguments(
                     new List<Command> { new("git", @"tag {0}-{1} -a -m ""Released {1} {0}"""), new("git", "push {0}-{1}") },
+                    BatchSeparation.CommandLine,
                     null,
                     new List<Values> { new("1.0.1", "Sundew.CommandLine"), new("2.0.1", "Sundew.Base") }));
+
+            result.Should().Equal(expected, (p1, p2) => p1.StartInfo.FileName == p2.StartInfo.FileName && p1.StartInfo.Arguments == p2.StartInfo.Arguments);
+        }
+
+        [Fact]
+        public async Task RunAsync_WhenUsingBatchFiles_Then_ResultShouldContainExpectedProcesses()
+        {
+            var anyBatchFile = @"c:\temp\AnyFiles.txt";
+            var expected = new[] { MockTag("1.0.1", "Sundew.CommandLine"), MockPush("1.0.1", "Sundew.CommandLine"), MockTag("2.0.1", "Sundew.Base"), MockPush("2.0.1", "Sundew.Base") };
+            this.fileSystem.Setup(x => x.ReadAllText(anyBatchFile)).Returns(@"1.0.1|Sundew.CommandLine
+2.0.1|Sundew.Base
+");
+            processRunner.Setup(x => x.Run(It.IsAny<ProcessStartInfo>())).Returns<ProcessStartInfo>(
+                psi =>
+                {
+                    var process = New.Mock<IProcess>();
+                    process.SetupGet(x => x.StandardOutput).Returns(new StreamReader(new MemoryStream(new byte[0])));
+                    process.SetupGet(x => x.StartInfo).Returns(psi);
+                    return process;
+                });
+
+            var result = await testee.RunAsync(
+                new BatchArguments(
+                    new List<Command> { new("git", @"tag {0}-{1} -a -m ""Released {1} {0}"""), new("git", "push {0}-{1}") },
+                    BatchSeparation.NewLine,
+                    null,
+                    null,
+                    new List<string> { anyBatchFile }));
 
             result.Should().Equal(expected, (p1, p2) => p1.StartInfo.FileName == p2.StartInfo.FileName && p1.StartInfo.Arguments == p2.StartInfo.Arguments);
         }

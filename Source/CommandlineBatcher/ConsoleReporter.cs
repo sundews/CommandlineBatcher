@@ -9,8 +9,9 @@ namespace CommandlineBatcher
 {
     using System;
     using CommandlineBatcher.Diagnostics;
+    using CommandlineBatcher.Internal;
 
-    internal class ConsoleReporter : IBatchRunnerReporter
+    internal class ConsoleReporter : IBatchRunnerReporter, IConditionEvaluatorReporter
     {
         private readonly Verbosity verbosity;
 

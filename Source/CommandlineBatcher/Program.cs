@@ -5,7 +5,7 @@
     using System.Threading.Tasks;
     using CommandlineBatcher.Diagnostics;
     using CommandlineBatcher.Internal;
-    using Sundew.Base.Computation;
+    using Sundew.Base.Primitives.Computation;
     using Sundew.CommandLine;
 
     class Program
@@ -29,7 +29,7 @@
         private static async ValueTask<Result<int, ParserError<int>>> Handle(BatchArguments arguments)
         {
             var consoleReporter = new ConsoleReporter(arguments.Verbosity);
-            var batchRunner = new BatchRunner(new ProcessRunner(), new FileSystem(), consoleReporter);
+            var batchRunner = new BatchRunner(new ProcessRunner(), new FileSystem(), new ConditionEvaluator(consoleReporter), consoleReporter);
             var processes = await batchRunner.RunAsync(arguments);
             var failedProcesses = processes.Where(x => x.ExitCode != 0).ToList();
             foreach (var process in failedProcesses)

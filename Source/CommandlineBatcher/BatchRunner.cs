@@ -19,14 +19,18 @@ namespace CommandlineBatcher
 
     public class BatchRunner
     {
+        private const string WindowsNewLine = "\r\n";
+        private const string UnixNewLine = "\n";
         private readonly IProcessRunner processRunner;
         private readonly IFileSystem fileSystem;
+        private readonly ConditionEvaluator conditionEvaluator;
         private readonly IBatchRunnerReporter batchRunnerReporter;
 
-        public BatchRunner(IProcessRunner processRunner, IFileSystem fileSystem, IBatchRunnerReporter batchRunnerReporter)
+        public BatchRunner(IProcessRunner processRunner, IFileSystem fileSystem, ConditionEvaluator conditionEvaluator, IBatchRunnerReporter batchRunnerReporter)
         {
             this.processRunner = processRunner;
             this.fileSystem = fileSystem;
+            this.conditionEvaluator = conditionEvaluator;
             this.batchRunnerReporter = batchRunnerReporter;
         }
 
@@ -38,7 +42,7 @@ namespace CommandlineBatcher
             {
                 foreach (var valuesFile in batchArguments.BatchesFiles)
                 {
-                    var batchesText = this.fileSystem.ReadAllText(valuesFile).Trim().AsMemory().ParseCommandLineArguments();
+                    var batchesText = GetBatches(this.fileSystem.ReadAllText(valuesFile), batchArguments.BatchSeparation);
                     foreach (var batch in batchesText)
                     {
                         batches.Add(Values.From(batch, batchArguments.BatchValueSeparator));
@@ -75,8 +79,25 @@ namespace CommandlineBatcher
             return Task.FromResult<IReadOnlyCollection<IProcess>>(processes);
         }
 
+        private IEnumerable<string> GetBatches(string batchesText, BatchSeparation batchSeparation)
+        {
+            return batchSeparation switch
+            {
+                BatchSeparation.CommandLine => batchesText.AsMemory().Trim().ParseCommandLineArguments(),
+                BatchSeparation.NewLine => batchesText.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries),
+                BatchSeparation.NewLineWindows => batchesText.Split(WindowsNewLine, StringSplitOptions.RemoveEmptyEntries),
+                BatchSeparation.NewLineUnix => batchesText.Split(UnixNewLine, StringSplitOptions.RemoveEmptyEntries),
+                _ => throw new ArgumentOutOfRangeException(nameof(batchSeparation), batchSeparation, $"Invalid batch separation value: {batchSeparation}")
+            };
+        }
+
         private void RunCommand(BatchArguments batchArguments, Command command, Values values, ConcurrentQueue<IProcess> processes)
         {
+            if (!this.conditionEvaluator.Evaluate(batchArguments.Condition))
+            {
+                return;
+            }
+
             var processStartInfo = new ProcessStartInfo(command.Executable, string.Format(command.Arguments, values.Arguments))
             {
                 WorkingDirectory = batchArguments.RootDirectory,
