@@ -54,5 +54,13 @@ namespace CommandlineBatcher
                 Console.WriteLine($@"{process.StartInfo.FileName} {process.StartInfo.Arguments} ({process.Id}) failed with {process.ExitCode}");
             }
         }
+
+        public void Evaluated(string lhs, string @operator, string rhs, bool result)
+        {
+            if (this.verbosity != Verbosity.Quiet)
+            {
+                Console.WriteLine($@"Evaluated '{lhs}' {@operator} '{rhs}' to {result}");
+            }
+        }
     }
 }

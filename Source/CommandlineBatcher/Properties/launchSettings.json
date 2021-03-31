@@ -2,7 +2,7 @@
   "profiles": {
     "CommandLineBatcher": {
       "commandName": "Project",
-      "commandLineArgs": "-c \"cmd|/c echo {0}-{1}\" \"cmd|/c echo {1}-{0}\" -v 1.0.1|Sundew.CommandLine 2.0.1|Sundew.Base"
+      "commandLineArgs": "-c \"cmd|/c echo {0}-{1}\" \"cmd|/c echo {1}-{0}\" -b 1.0.1|Sundew.CommandLine 2.0.1|Sundew.Base --if {1}==Sundew.Base"
     }
   }
 }
