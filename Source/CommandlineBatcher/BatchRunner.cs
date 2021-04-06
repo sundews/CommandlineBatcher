@@ -41,10 +41,17 @@ namespace CommandlineBatcher
             {
                 foreach (var valuesFile in batchArguments.BatchesFiles)
                 {
-                    var batchesText = GetBatches(this.fileSystem.ReadAllText(valuesFile), batchArguments.BatchSeparation);
-                    foreach (var batch in batchesText)
+                    if (!this.fileSystem.FileExists(valuesFile))
                     {
-                        batches.Add(Values.From(batch, batchArguments.BatchValueSeparator));
+                        var batchesText = GetBatches(this.fileSystem.ReadAllText(valuesFile), batchArguments.BatchSeparation);
+                        foreach (var batch in batchesText)
+                        {
+                            batches.Add(Values.From(batch, batchArguments.BatchValueSeparator));
+                        }
+                    }
+                    else
+                    {
+                        this.batchRunnerReporter.FileNotFound(valuesFile);
                     }
                 }
             }

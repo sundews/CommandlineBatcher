@@ -15,5 +15,10 @@ namespace CommandlineBatcher.Internal
         {
             return File.ReadAllText(path);
         }
+
+        public bool FileExists(string path)
+        {
+            return File.Exists(path);
+        }
     }
 }

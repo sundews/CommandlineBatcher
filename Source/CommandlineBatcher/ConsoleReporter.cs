@@ -47,6 +47,14 @@ namespace CommandlineBatcher
             }
         }
 
+        public void FileNotFound(string valuesFile)
+        {
+            if (this.verbosity != Verbosity.Quiet)
+            {
+                Console.WriteLine($@"{valuesFile} was not found and will be ignored");
+            }
+        }
+
         public void Error(IProcess process)
         {
             if (this.verbosity != Verbosity.Quiet)
