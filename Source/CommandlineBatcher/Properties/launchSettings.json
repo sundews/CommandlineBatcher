@@ -2,7 +2,7 @@
   "profiles": {
     "CommandLineBatcher": {
       "commandName": "Project",
-      "commandLineArgs": "-c \"bash|echo {0}...{1}...{2}\" -bs NewLine -s ',' -bf ./Source/logs/packages.push"
+      "commandLineArgs": "--help"
     }
   }
 }

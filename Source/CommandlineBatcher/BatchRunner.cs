@@ -41,7 +41,7 @@ namespace CommandlineBatcher
             {
                 foreach (var valuesFile in batchArguments.BatchesFiles)
                 {
-                    if (!this.fileSystem.FileExists(valuesFile))
+                    if (this.fileSystem.FileExists(valuesFile))
                     {
                         var batchesText = GetBatches(this.fileSystem.ReadAllText(valuesFile), batchArguments.BatchSeparation);
                         foreach (var batch in batchesText)

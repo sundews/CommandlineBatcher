@@ -8,11 +8,20 @@ Help
   -c   | --commands              | The commands to be executed                                                                       | Required
                                    Format: "{command}[|{arguments}]"...
                                    Values can be injected by position with {number}
-  -s   | --batch-value-separator | The batch value separator                                                                         | Default: |
+  -bs  | --batch-separation      | Specifies how batches are separated:                                                              | Default: command-line
+                                   [c]ommand-line, [n]ew-line, [w]indows-new-line, [u]nix-new-line
+  -bvs | --batch-value-separator | The batch value separator                                                                         | Default: |
   Batches with values                                                                                                                | Required
    -b  | --batches               | The batches to be passed for each command                                                         | Default: [none]
                                    Each batch can contain multiple values separated by the batch value separator
    -bf | --batches-files         | A list of files containing batches                                                                | Default: [none]
+       | --if                    | A condition for each batch to check if it should run                                              | Default: [none]
+                                   Format: [StringComparison:]{lhs} {operator} {rhs}
+                                   lhs and rhs can be injected by position with {number}
+                                   operators: == equals, |< starts with, >| ends with, >< contains
+                                   negations: != not equals, !< not starts with, >! not ends with, <> not contains
+                                   StringComparison: O Ordinal, OI OrdinalIgnoreCase, C CurrentCulture,
+                                   CI CurrentCultureIgnoreCase, I InvariantCulture, II InvariantCultureIgnoreCase
   -d   | --root-directory        | The directory to search for projects                                                              | Default: Current directory
   -e   | --execution-order       | Specifies whether all commands are executed for the first [b]atch before moving to the next batch | Default: batch
                                    or the first [c]ommand is executed for all batches before moving to the next command
