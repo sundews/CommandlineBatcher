@@ -36,6 +36,6 @@ Help
 ## Samples
 CommandlineBatcher is being used in various git repositories to automate version tagging of stable releases and wait for all releases to be published to NuGet.
 
-https://github.com/hugener/Sundew.Generator/blob/main/azure-pipelines.yml
+https://github.com/hugener/Sundew.Generator/blob/main/.github/workflows/dotnet.yml
 
-https://github.com/hugener/Sundew.CommandLine/blob/master/azure-pipelines.yml
+https://github.com/hugener/Sundew.CommandLine/blob/master/.github/workflows/dotnet.yml
