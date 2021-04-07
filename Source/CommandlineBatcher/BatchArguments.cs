@@ -124,7 +124,7 @@ CI CurrentCultureIgnoreCase, I InvariantCulture, II InvariantCultureIgnoreCase" 
 
         private string SerializeBatch(Values values, CultureInfo arg2)
         {
-            return values.Arguments.AggregateToString(this.BatchValueSeparator);
+            return values.Arguments.JoinToString(this.BatchValueSeparator);
         }
 
         private void DeserializeMaxParallelism(string s)
