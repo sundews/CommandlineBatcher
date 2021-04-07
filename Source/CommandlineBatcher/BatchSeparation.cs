@@ -11,7 +11,7 @@ namespace CommandlineBatcher
     {
         CommandLine,
         NewLine,
-        NewLineWindows,
-        NewLineUnix,
+        WindowsNewLine,
+        UnixNewLine,
     }
 }

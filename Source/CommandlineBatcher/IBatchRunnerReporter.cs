@@ -16,5 +16,7 @@ namespace CommandlineBatcher
         void ReportMessage(IProcess process, string line);
 
         void ProcessExited(IProcess process);
+
+        void FileNotFound(string valuesFile);
     }
 }

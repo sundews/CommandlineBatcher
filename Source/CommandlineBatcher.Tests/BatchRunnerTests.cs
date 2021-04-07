@@ -28,6 +28,7 @@ namespace CommandlineBatcher.Tests
             this.processRunner = New.Mock<IProcessRunner>();
             this.fileSystem = New.Mock<IFileSystem>();
             this.testee = new BatchRunner(this.processRunner, this.fileSystem, new ConditionEvaluator(New.Mock<IConditionEvaluatorReporter>()),New.Mock<IBatchRunnerReporter>());
+            this.fileSystem.Setup(x => x.FileExists(It.IsAny<string>())).Returns(true);
         }
 
         [Fact]

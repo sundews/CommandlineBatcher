@@ -9,5 +9,6 @@ namespace CommandlineBatcher.Internal
 {
     public interface IConditionEvaluatorReporter
     {
+        void Evaluated(string lhs, string @operator, string rhs, bool result);
     }
 }
