@@ -34,7 +34,7 @@ namespace CommandlineBatcher
             this.batchRunnerReporter = batchRunnerReporter;
         }
 
-        public Task<IReadOnlyCollection<IProcess>> RunAsync(BatchArguments batchArguments)
+        public async Task<IReadOnlyCollection<IProcess>> RunAsync(BatchArguments batchArguments)
         {
             var processes = new ConcurrentQueue<IProcess>();
             var batches = batchArguments.Batches?.ToList() ?? new List<Values>();
@@ -54,6 +54,15 @@ namespace CommandlineBatcher
                     {
                         this.batchRunnerReporter.FileNotFound(valuesFile);
                     }
+                }
+            }
+
+            if (batchArguments.BatchesFromStandardInput)
+            {
+                var batchesText = GetBatches(await Console.In.ReadToEndAsync(), batchArguments.BatchSeparation);
+                foreach (var batch in batchesText)
+                {
+                    batches.Add(Values.From(batch, batchArguments.BatchValueSeparator));
                 }
             }
 
@@ -84,7 +93,7 @@ namespace CommandlineBatcher
                     });
             }
 
-            return Task.FromResult<IReadOnlyCollection<IProcess>>(processes);
+            return processes;
         }
 
         private IEnumerable<string> GetBatches(string batchesText, BatchSeparation batchSeparation)

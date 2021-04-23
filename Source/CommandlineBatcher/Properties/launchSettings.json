@@ -2,7 +2,7 @@
   "profiles": {
     "CommandLineBatcher": {
       "commandName": "Project",
-      "commandLineArgs": "--help"
+      "commandLineArgs": "-c |Hello{0} -i < \"C:\\temp\\q.txt\""
     }
   }
 }
