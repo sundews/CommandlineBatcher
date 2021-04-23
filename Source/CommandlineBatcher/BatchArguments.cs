@@ -11,7 +11,6 @@ namespace CommandlineBatcher
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
-    using Sundew.Base.Collections;
     using Sundew.Base.Primitives.Numeric;
     using Sundew.Base.Text;
     using Sundew.CommandLine;
@@ -79,7 +78,7 @@ namespace CommandlineBatcher
         public void Configure(IArgumentsBuilder argumentsBuilder)
         {
             argumentsBuilder.OptionsHelpOrder = OptionsHelpOrder.AsAdded;
-            argumentsBuilder.AddRequiredList("c", "commands", this.commands, this.SerializeCommand, this.DeserializeCommand, @$"The commands to be executed{Environment.NewLine}Format: ""{{command}}[|{{arguments}}]""...{Environment.NewLine}Values can be injected by position with {{number}}", true);
+            argumentsBuilder.AddRequiredList("c", "commands", this.commands, this.SerializeCommand, this.DeserializeCommand, @$"The commands to be executed{Environment.NewLine}Format: ""[{{command}}][|{{arguments}}]""...{Environment.NewLine}Values can be injected by position with {{number}}{Environment.NewLine}If no command is specified, the argument is sent to standard output", true);
             argumentsBuilder.AddOptionalEnum("bs", "batch-separation", () => this.BatchSeparation, s => this.BatchSeparation = s, @"Specifies how batches are separated:
 {0}");
             argumentsBuilder.AddOptional("bvs", "batch-value-separator", () => this.BatchValueSeparator, s => this.BatchValueSeparator = s, "The batch value separator");
@@ -103,7 +102,7 @@ CI CurrentCultureIgnoreCase, I InvariantCulture, II InvariantCultureIgnoreCase" 
 
         private Command DeserializeCommand(string commandWithArguments, CultureInfo arg2)
         {
-            var args = commandWithArguments.Split('|', StringSplitOptions.RemoveEmptyEntries);
+            var args = commandWithArguments.Split('|');
             return args.Length switch
             {
                 1 => new Command(args[0], string.Empty),

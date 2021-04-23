@@ -10,6 +10,7 @@ namespace CommandlineBatcher
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
@@ -100,29 +101,48 @@ namespace CommandlineBatcher
 
         private void RunCommand(BatchArguments batchArguments, Command command, Values values, ConcurrentQueue<IProcess> processes)
         {
-            var processStartInfo = new ProcessStartInfo(command.Executable, string.Format(command.Arguments, values.Arguments))
+            if (string.IsNullOrEmpty(command.Executable))
             {
-                WorkingDirectory = batchArguments.RootDirectory,
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-            };
-            var process = this.processRunner.Run(processStartInfo);
-            if (process != null)
+                Console.WriteLine(command.Arguments, values.Arguments);
+                return;
+            }
+
+            try
             {
-                this.batchRunnerReporter.Started(process);
-                processes.Enqueue(process);
-                while (!process.StandardOutput.EndOfStream)
-                {
-                    var line = process.StandardOutput.ReadLine();
-                    if (line != null)
+                var processStartInfo =
+                    new ProcessStartInfo(command.Executable, string.Format(command.Arguments, values.Arguments))
                     {
-                        this.batchRunnerReporter.ReportMessage(process, line);
+                        WorkingDirectory = batchArguments.RootDirectory,
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                    };
+                var process = this.processRunner.Run(processStartInfo);
+                if (process != null)
+                {
+                    this.batchRunnerReporter.Started(process);
+                    processes.Enqueue(process);
+                    while (!process.StandardOutput.EndOfStream)
+                    {
+                        var line = process.StandardOutput.ReadLine();
+                        if (line != null)
+                        {
+                            this.batchRunnerReporter.ReportMessage(process, line);
+                        }
                     }
+
+                    process.WaitForExit();
+                    this.batchRunnerReporter.ProcessExited(process);
+                }
+            }
+            catch (Win32Exception e)
+            {
+                if (e.NativeErrorCode == 2)
+                {
+                    throw new InvalidOperationException($"Could not find the executable: {command.Executable}", e);
                 }
 
-                process.WaitForExit();
-                this.batchRunnerReporter.ProcessExited(process);
+                throw;
             }
         }
     }
