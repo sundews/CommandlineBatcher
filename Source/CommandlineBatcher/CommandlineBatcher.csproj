@@ -16,8 +16,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sundew.CommandLine" Version="7.0.0-u20210423-231113-dev-ImprovedHelpText" />
-    <PackageReference Include="Sundew.Packaging.Publish" Version="6.0.0-u20210423-225932-pre">
+    <PackageReference Include="Sundew.CommandLine" Version="7.0.0" />
+    <PackageReference Include="Sundew.Packaging.Publish" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

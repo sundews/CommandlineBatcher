@@ -87,7 +87,7 @@ namespace CommandlineBatcher
                 .AddList("b", "batches", this.batches!, this.SerializeBatch, this.DeserializeBatch, @$"The batches to be passed for each command
 Each batch can contain multiple values separated by the batch value separator", true)
                 .AddList("bf", "batches-files", this.batchesFiles!, "A list of files containing batches", true)
-                .AddSwitch("i", "stdio", this.BatchesFromStandardInput, b => this.BatchesFromStandardInput = b, "Indicates that batches should be read from standard input"));
+                .AddSwitch("bsi", "batches-stdin", this.BatchesFromStandardInput, b => this.BatchesFromStandardInput = b, "Indicates that batches should be read from standard input"));
             argumentsBuilder.AddOptionalEnum("bs", "batch-separation", () => this.BatchSeparation, s => this.BatchSeparation = s, @"Specifies how batches are separated:
 {0}");
             argumentsBuilder.AddOptional("bvs", "batch-value-separator", () => this.BatchValueSeparator, s => this.BatchValueSeparator = s, "The batch value separator");
