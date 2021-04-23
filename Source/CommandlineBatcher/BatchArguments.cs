@@ -86,13 +86,13 @@ namespace CommandlineBatcher
                 .AddList("b", "batches", this.batches!, this.SerializeBatch, this.DeserializeBatch, @$"The batches to be passed for each command
 Each batch can contain multiple values separated by the batch value separator", true)
                 .AddList("bf", "batches-files", this.batchesFiles!, "A list of files containing batches", true));
-            argumentsBuilder.AddOptional(null, "if", () => this.Condition, c => this.Condition = c, @$"A condition for each batch to check if it should run
+            /*argumentsBuilder.AddOptional(null, "if", () => this.Condition, c => this.Condition = c, @$"A condition for each batch to check if it should run
 Format: [StringComparison:]{{lhs}} {{operator}} {{rhs}}
 lhs and rhs can be injected by position with {{number}}
 operators: == equals, |< starts with, >| ends with, >< contains
 negations: != not equals, !< not starts with, >! not ends with, <> not contains
 StringComparison: O Ordinal, OI OrdinalIgnoreCase, C CurrentCulture,
-CI CurrentCultureIgnoreCase, I InvariantCulture, II InvariantCultureIgnoreCase" , true);
+CI CurrentCultureIgnoreCase, I InvariantCulture, II InvariantCultureIgnoreCase" , true);*/
             argumentsBuilder.AddOptional("d", "root-directory", () => this.RootDirectory, s => this.RootDirectory = s, "The directory to search for projects", true, defaultValueText: "Current directory");
             argumentsBuilder.AddOptionalEnum("e", "execution-order", () => this.ExecutionOrder, v  => this.ExecutionOrder = v, $"Specifies whether all commands are executed for the first {{1}} before moving to the next batch{Environment.NewLine}or the first {{2}} is executed for all batches before moving to the next command{Environment.NewLine}- Finish first {{1}} first{Environment.NewLine}- Finish first {{2}} first");
             argumentsBuilder.AddOptional("mp", "max-parallelism", () => this.MaxDegreeOfParallelism.ToString(), this.DeserializeMaxParallelism, @$"The degree of parallel execution (1-{Environment.ProcessorCount}){Environment.NewLine}Specify ""all"" for number of cores.");
