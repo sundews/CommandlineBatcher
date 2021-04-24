@@ -99,7 +99,10 @@ negations: != not equals, !< not starts with, >! not ends with, <> not contains
 StringComparison: O Ordinal, OI OrdinalIgnoreCase, C CurrentCulture,
 CI CurrentCultureIgnoreCase, I InvariantCulture, II InvariantCultureIgnoreCase", true);
             argumentsBuilder.AddOptional("d", "root-directory", () => this.RootDirectory, s => this.RootDirectory = s, "The directory to search for projects", true, defaultValueText: "Current directory");
-            argumentsBuilder.AddOptionalEnum("e", "execution-order", () => this.ExecutionOrder, v => this.ExecutionOrder = v, $"Specifies whether all commands are executed for the first {{1}} before moving to the next batch{Environment.NewLine}or the first {{2}} is executed for all batches before moving to the next command{Environment.NewLine}- Finish first {{1}} first{Environment.NewLine}- Finish first {{2}} first");
+            argumentsBuilder.AddOptionalEnum("e", "execution-order", () => this.ExecutionOrder, v => this.ExecutionOrder = v, @$"Specifies whether all commands are executed for the first {{1}} before moving to the next batch
+or the first {{2}} is executed for all batches before moving to the next command
+- Finish first {{1}} first
+- Finish first {{2}} first");
             argumentsBuilder.AddOptional("mp", "max-parallelism", () => this.MaxDegreeOfParallelism.ToString(), this.DeserializeMaxParallelism, @$"The degree of parallel execution (1-{Environment.ProcessorCount}){Environment.NewLine}Specify ""all"" for number of cores.");
             argumentsBuilder.AddOptionalEnum("p", "parallelize", () => this.Parallelize, v => this.Parallelize = v, "Specifies whether commands or batches run in parallel: {0}");
             argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
