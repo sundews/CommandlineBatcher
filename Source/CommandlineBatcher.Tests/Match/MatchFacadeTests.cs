@@ -31,8 +31,8 @@ namespace CommandlineBatcher.Tests.Match
 
         [Theory]
         [InlineData("main", new[] { "::set-output name=stage::production", "::set-output name=buildConfiguration::Release" })]
-        [InlineData("release/1.2.0", new[] { "::set-output name=stage::ci", "::set-output name=buildConfiguration::Debug" })]
-        [InlineData("feature/MyFeature", new[] { "::set-output name=stage::development", "::set-output name=buildConfiguration::Debug", "::set-output name=Postfix::MyFeature" })]
+        [InlineData("release/1.2.0", new[] { "::set-output name=stage::ci", "::set-output name=buildConfiguration::Debug", "::set-output name=dev-package-source-if-set:: -s https://www.myget.org/F/sundew-dev/api/v3/index.json" })]
+        [InlineData("feature/MyFeature", new[] { "::set-output name=stage::development", "::set-output name=buildConfiguration::Debug", "::set-output name=Postfix::MyFeature", "::set-output name=dev-package-source-if-set:: -s https://www.myget.org/F/sundew-dev/api/v3/index.json" })]
         [InlineData("invalid", new string[0])]
         public async Task MatchAsync_When_UsingInput_Then_OutputterShouldBeCalledWithExpectedOutputs(string input, string[] expectedOutputs)
         {
@@ -40,8 +40,8 @@ namespace CommandlineBatcher.Tests.Match
             var patterns = new List<string>
             {
                 @"(?:master|main).* => stage=production|buildConfiguration=Release",
-                @"release/.+ => stage=ci|buildConfiguration=Debug",
-                @"(?:develop.*|feature/(?<Postfix>.+)|bugfix/(?<Postfix>.+)) => stage=development|buildConfiguration=Debug|Postfix={Postfix}"
+                @"release/.+ => stage=ci|buildConfiguration=Debug|dev-package-source-if-set= -s https://www.myget.org/F/sundew-dev/api/v3/index.json",
+                @"(?:develop.*|feature/(?<Postfix>.+)|bugfix/(?<Postfix>.+)) => stage=development|buildConfiguration=Debug|Postfix={Postfix}|dev-package-source-if-set= -s https://www.myget.org/F/sundew-dev/api/v3/index.json"
             };
 
             await this.testee.MatchAsync(new MatchVerb(patterns, input, false, "::set-output name={0}::{1}", null, '='));

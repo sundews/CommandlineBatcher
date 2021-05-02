@@ -15,7 +15,7 @@ namespace CommandlineBatcher.Match
 
     public class MatchFacade
     {
-        private const string PatternRegexFormat = @"^(?<MatchRegex>(?:[^#\s])+)\s*=\>\s*(?<Values>[^{0}\s]+)(?:\{0}(?<Values>[^{0}\s]+))*";
+        private const string PatternRegexFormat = @"^(?<MatchRegex>(?:[^#\s])+)\s*=\>\s*(?<Values>[^{0}]+)(?:\{0}(?<Values>[^{0}]+))*";
         private const string MatchRegex = "MatchRegex";
         private const string Values = "Values";
         private readonly IInputter inputter;
