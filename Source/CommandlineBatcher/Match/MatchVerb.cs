@@ -19,16 +19,26 @@ namespace CommandlineBatcher.Match
         {
         }
 
-        public MatchVerb(List<string> patterns, string? input, bool useStandardInput = false, string? format = null, char? tupleSeparator = null, char? tupleValueSeparator = null, string? outputPath = null, bool merge = false)
+        public MatchVerb(
+            List<string> patterns, 
+            string? input, 
+            bool useStandardInput = false, 
+            string? format = null, 
+            char? batchSeparator = null, 
+            char? batchValueSeparator = null,
+            string mergeDelimiter = null, 
+            string? mergeFormat = null,
+            string? outputPath = null)
         {
             this.patterns = patterns;
-            this.TupleSeparator = tupleSeparator ?? '|';
-            this.TupleValueSeparator = tupleValueSeparator ?? ',';
+            this.BatchSeparator = batchSeparator ?? '|';
+            this.BatchValueSeparator = batchValueSeparator ?? ',';
             this.Input = input;
             this.UseStandardInput = useStandardInput;
             this.Format = format;
+            this.MergeDelimiter = mergeDelimiter;
             this.OutputPath = outputPath;
-            this.Merge = merge;
+            this.MergeFormat = mergeFormat;
         }
 
         public IReadOnlyList<string> Patterns => this.patterns;
@@ -39,13 +49,15 @@ namespace CommandlineBatcher.Match
 
         public string? Format { get; private set; }
 
-        public char TupleSeparator { get; private set; }
+        public char BatchSeparator { get; private set; }
 
-        public char TupleValueSeparator { get; private set; }
+        public char BatchValueSeparator { get; private set; }
+
+        public string? MergeDelimiter { get; private set; }
 
         public string? OutputPath { get; private set; }
 
-        public bool Merge { get; private set; }
+        public string? MergeFormat { get; private set; }
 
         public Verbosity Verbosity { get; private set; }
 
@@ -55,19 +67,22 @@ namespace CommandlineBatcher.Match
 
         public string? ShortName { get; } = "m";
 
-        public string HelpText { get; } = "Matches the specified input to patterns and maps it to key-value pairs.";
+        public string HelpText { get; } = "Matches the specified input to patterns and maps it to batches.";
 
         public void Configure(IArgumentsBuilder argumentsBuilder)
         {
             argumentsBuilder.AddRequiredList("p", "patterns", this.patterns, @"The patterns (Regex) to be matched in the order they are specified
-Format: {pattern} => {tuple}[,tuple]*
+Format: {pattern} => {batch}[,batch]*
 Batches may consist of multiple values, separated by the value-separator
 Batches can also contain regex group names in the format {group-name}", true);
-            argumentsBuilder.AddOptional("f", "format", () => this.Format, s => this.Format = s, "The format to apply to each key value pair.");
-            argumentsBuilder.AddOptional("ts", "tuple-separator", () => this.TupleSeparator.ToString(), s => this.TupleSeparator = s[0], "The character used to split tuples.");
-            argumentsBuilder.AddOptional("tvs", "tuple-value-separator", () => this.TupleValueSeparator.ToString(), s => this.TupleValueSeparator = s[0], "The character used to split tuple values.");
-            argumentsBuilder.AddSwitch("m", "merge", this.Merge, b => this.Merge = b, "Indicates whether batches should be merged and output as one");
-            argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");  argumentsBuilder.RequireAnyOf("Input", builder => builder
+            argumentsBuilder.AddOptional("f", "format", () => this.Format, s => this.Format = s, "The format to apply to each batch.");
+            argumentsBuilder.AddOptional("bs", "batch-separator", () => this.BatchSeparator.ToString(), s => this.BatchSeparator = s[0], "The character used to split batches.");
+            argumentsBuilder.AddOptional("bvs", "batch-value-separator", () => this.BatchValueSeparator.ToString(), s => this.BatchValueSeparator = s[0], "The character used to split batch values.");
+            argumentsBuilder.AddOptional("md", "merge-delimiter", () => this.MergeDelimiter, s => this.MergeDelimiter = s, "Specifies the delimiter used between values when merging");
+            argumentsBuilder.AddOptional("m", "merge-format", () => this.MergeFormat, s => this.MergeFormat = s, @"Indicates whether batches should be merged and specifies
+the format to be used for merging");
+            argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
+            argumentsBuilder.RequireAnyOf("Input", builder => builder
                 .Add("i", "input", () => this.Input, s => this.Input = s, "The input to be matched", true)
                 .AddSwitch(null, "input-stdin", this.UseStandardInput, b => this.UseStandardInput = b, "Indicates that the input should be read from standard input"));
             argumentsBuilder.AddOptionalValue("output-path", () => this.OutputPath, s => this.OutputPath = s, "The output path, if not specified application will output to stdout");

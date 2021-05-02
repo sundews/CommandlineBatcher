@@ -79,5 +79,13 @@ namespace CommandlineBatcher
             Console.WriteLine(exception.ToString());
             Console.ForegroundColor = backgroundColor;
         }
+
+        public void Report(string message)
+        {
+            if (this.verbosity != Verbosity.Quiet)
+            {
+                Console.WriteLine(message);
+            }
+        }
     }
 }

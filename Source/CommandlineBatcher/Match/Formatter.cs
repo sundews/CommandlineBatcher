@@ -49,7 +49,7 @@ namespace CommandlineBatcher.Match
             }
 
             var lastWasInSeparator = false;
-            var keyValue = value.AsMemory().Split((character, _, _) =>
+            var values = value.AsMemory().Split((character, _, _) =>
                 {
                     var wasInSeparator = lastWasInSeparator;
                     if (wasInSeparator)
@@ -76,7 +76,7 @@ namespace CommandlineBatcher.Match
                     return SplitAction.Include;
                 }).ToArray(x => x.ToString());
 
-            stringBuilder.AppendFormat(format, keyValue);
+            stringBuilder.AppendFormat(format, values);
         }
 
         private static string? ReplaceKnownCharacters(string? value)

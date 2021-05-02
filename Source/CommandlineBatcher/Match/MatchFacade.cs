@@ -15,7 +15,7 @@ namespace CommandlineBatcher.Match
 
     public class MatchFacade
     {
-        private const string PatternRegexFormat = @"^(?<MatchRegex>(?:[^#\s])+)\s*=\>\s*(?<Values>[^{0}]+)(?:\{0}(?<Values>[^{0}]+))*";
+        private const string PatternRegexFormat = @"^(?<MatchRegex>.+?)\s?=\>\s?(?<Values>[^\{0}]+)(?:\{0}(?<Values>[^\{0}]+))*";
         private const string MatchRegex = "MatchRegex";
         private const string Values = "Values";
         private readonly IInputter inputter;
@@ -35,32 +35,57 @@ namespace CommandlineBatcher.Match
             {
                 var input = await this.inputter.GetInputAsync();
 
-                var patternsRegex = new Regex(string.Format(PatternRegexFormat, matchVerb.TupleSeparator), RegexOptions.ExplicitCapture);
+                var patternsRegex = new Regex(string.Format(PatternRegexFormat, matchVerb.BatchSeparator), RegexOptions.ExplicitCapture);
                 var patternMatches = matchVerb.Patterns.Select(x =>
                 {
                     var pattern = patternsRegex.Match(x);
-                    return (regex: new Regex(pattern.Groups[MatchRegex].Value), values: pattern.Groups[Values].Captures.Select(capture => capture.Value));
+                    var patternText = pattern.Groups[MatchRegex].Value;
+                    return (regex: new Regex(patternText), values: pattern.Groups[Values].Captures.Select(capture => capture.Value).ToArray(), pattern: patternText);
                 });
 
-                var matchAndValues = patternMatches.Select(tuple => (match: tuple.regex.Match(input), tuple.regex, tuple.values)).FirstOrDefault(tuple => tuple.match.Success);
+                var shouldMerge = matchVerb.MergeFormat != null || matchVerb.MergeDelimiter != null;
+                var matchAndValues = patternMatches.Select(tuple => (match: tuple.regex.Match(input), tuple.regex, tuple.values, tuple.pattern)).FirstOrDefault(tuple => tuple.match.Success);
                 if (matchAndValues != default)
                 {
-                    var stringBuilder = new StringBuilder();
-                    foreach (var value in matchAndValues.values)
+                    this.matchReporter.Report($"The input: {input} matched: {matchAndValues.pattern}");
+                    if (matchAndValues.values.Length == 0)
                     {
-                        Formatter.AppendFormat(stringBuilder, matchVerb.Format, value, matchAndValues.regex, matchAndValues.match.Groups, matchVerb.TupleValueSeparator);
-                        if (!matchVerb.Merge)
+                        return 0;
+                    }
+
+                    var stringBuilder = new StringBuilder();
+                    Formatter.AppendFormat(stringBuilder, matchVerb.Format, matchAndValues.values[0], matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator);
+                    if (string.IsNullOrEmpty(matchVerb.MergeFormat))
+                    {
+                        await this.outputter.OutputAsync(stringBuilder.ToString());
+                        stringBuilder.Clear();
+                    }
+
+                    for (var index = 1; index < matchAndValues.values.Length; index++)
+                    {
+                        var value = matchAndValues.values[index];
+                        if (matchVerb.MergeDelimiter != null)
+                        {
+                            stringBuilder.Append(matchVerb.MergeDelimiter);
+                        }
+
+                        Formatter.AppendFormat(stringBuilder, matchVerb.Format, value, matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator);
+                        if (!shouldMerge)
                         {
                             await this.outputter.OutputAsync(stringBuilder.ToString());
                             stringBuilder.Clear();
                         }
                     }
 
-                    if (matchVerb.Merge)
+                    if (matchVerb.MergeFormat != null)
                     {
-                        await this.outputter.OutputAsync(stringBuilder.ToString());
+                        await this.outputter.OutputAsync(string.Format(matchVerb.MergeFormat, stringBuilder));
                         stringBuilder.Clear();
                     }
+                }
+                else
+                {
+                    this.matchReporter.Report($"The input: {input} did not match any pattern.");
                 }
 
                 return 0;
@@ -68,7 +93,7 @@ namespace CommandlineBatcher.Match
             catch (Exception e)
             {
                 this.matchReporter.Exception(e);
-                return - 1;
+                return -1;
             }
         }
     }

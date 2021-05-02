@@ -12,5 +12,7 @@ namespace CommandlineBatcher.Match
     public interface IMatchReporter
     {
         void Exception(Exception exception);
+
+        void Report(string message);
     }
 }
