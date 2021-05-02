@@ -28,12 +28,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Setup
+    - name: Build setup
       id: build-setup
       run: >
         dotnet tool update Sundew.Packaging.Tool -g
 
-        dotnet tool update CommandlineBatcher -g --version 3.0.0-u20210502-201822-dev-match-support --add-source ${{ env.dev-source-latest-version }}
+        dotnet tool update CommandlineBatcher -g --version 3.0.0-u20210502-203711-dev-match-support --add-source ${{ env.dev-source-latest-version }}
 
         cb match --patterns
         "refs/heads/(?:master|main).* => stage=production|buildConfiguration=Release"
