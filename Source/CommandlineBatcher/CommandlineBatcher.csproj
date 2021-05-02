@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -16,8 +16,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sundew.CommandLine" Version="7.0.0" />
-    <PackageReference Include="Sundew.Packaging.Publish" Version="6.0.0">
+    <PackageReference Include="Sundew.Base.Memory" Version="7.0.2" />
+    <PackageReference Include="Sundew.CommandLine" Version="8.0.1" />
+    <PackageReference Include="Sundew.Packaging.Publish" Version="6.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

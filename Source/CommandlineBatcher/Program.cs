@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using CommandlineBatcher.Diagnostics;
     using CommandlineBatcher.Internal;
+    using CommandlineBatcher.Match;
     using Sundew.Base.Primitives.Computation;
     using Sundew.CommandLine;
 
@@ -14,6 +15,7 @@
         {
             Console.WriteLine(Environment.CommandLine);
             var commandLineParser = new CommandLineParser<int, int>();
+            commandLineParser.AddVerb(new MatchVerb(), ExecuteMatchAsync);
             commandLineParser.WithArguments(new BatchArguments(), Handle);
 
             var result = await commandLineParser.ParseAsync(Environment.CommandLine, 1);
@@ -38,6 +40,16 @@
             }
 
             return Result.From(failedProcesses.Count == 0, 0, new ParserError<int>(-1));
+        }
+
+        private static async ValueTask<Result<int, ParserError<int>>> ExecuteMatchAsync(MatchVerb matchVerb)
+        {
+            IOutputter outputter = matchVerb.OutputPath != null
+                ? new FileOutputter(matchVerb.OutputPath)
+                : new ConsoleOutputter();
+            IInputter inputter = matchVerb.UseStandardInput ? new ConsoleInputter() : new Inputter(matchVerb.Input!);
+            var matchFacade = new MatchFacade(inputter, outputter, new ConsoleReporter(matchVerb.Verbosity));
+            return Result.Success(await matchFacade.MatchAsync(matchVerb));
         }
     }
 }
