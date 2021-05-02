@@ -75,6 +75,9 @@ namespace CommandlineBatcher.Match
 Format: {pattern} => {batch}[,batch]*
 Batches may consist of multiple values, separated by the value-separator
 Batches can also contain regex group names in the format {group-name}", true);
+            argumentsBuilder.RequireAnyOf("Input", builder => builder
+                .Add("i", "input", () => this.Input, s => this.Input = s, "The input to be matched", true)
+                .AddSwitch("isi", "input-stdin", this.UseStandardInput, b => this.UseStandardInput = b, "Indicates that the input should be read from standard input"));
             argumentsBuilder.AddOptional("f", "format", () => this.Format, s => this.Format = s, "The format to apply to each batch.");
             argumentsBuilder.AddOptional("bs", "batch-separator", () => this.BatchSeparator.ToString(), s => this.BatchSeparator = s[0], "The character used to split batches.");
             argumentsBuilder.AddOptional("bvs", "batch-value-separator", () => this.BatchValueSeparator.ToString(), s => this.BatchValueSeparator = s[0], "The character used to split batch values.");
@@ -82,9 +85,6 @@ Batches can also contain regex group names in the format {group-name}", true);
             argumentsBuilder.AddOptional("m", "merge-format", () => this.MergeFormat, s => this.MergeFormat = s, @"Indicates whether batches should be merged and specifies
 the format to be used for merging");
             argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
-            argumentsBuilder.RequireAnyOf("Input", builder => builder
-                .Add("i", "input", () => this.Input, s => this.Input = s, "The input to be matched", true)
-                .AddSwitch(null, "input-stdin", this.UseStandardInput, b => this.UseStandardInput = b, "Indicates that the input should be read from standard input"));
             argumentsBuilder.AddOptionalValue("output-path", () => this.OutputPath, s => this.OutputPath = s, "The output path, if not specified application will output to stdout");
         }
     }
