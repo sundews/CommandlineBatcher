@@ -75,7 +75,7 @@ namespace CommandlineBatcher.Tests
                 new BatchArguments(
                     new List<Command> { new("git", @"tag {0}-{1} -a -m ""Released {1} {0}"""), new("git", "push {0}-{1}") },
                     BatchSeparation.NewLine,
-                    null,
+                    "|",
                     null,
                     new List<string> { anyBatchFile }));
 

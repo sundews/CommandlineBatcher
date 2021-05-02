@@ -1,20 +1,26 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BatchSeparation.cs" company="Hukano">
+// <copyright file="Inputter.cs" company="Hukano">
 // Copyright (c) Hukano. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher
+namespace CommandlineBatcher.Match
 {
-    public enum BatchSeparation
+    using System.Threading.Tasks;
+
+    public class Inputter : IInputter
     {
-        CommandLine,
-        NewLine,
-        WindowsNewLine,
-        UnixNewLine,
-        Pipe,
-        SemiColon,
-        Comma
+        private readonly string input;
+
+        public Inputter(string input)
+        {
+            this.input = input;
+        }
+
+        public Task<string> GetInputAsync()
+        {
+            return Task.FromResult(input);
+        }
     }
 }

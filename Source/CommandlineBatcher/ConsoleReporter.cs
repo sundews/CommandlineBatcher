@@ -10,8 +10,9 @@ namespace CommandlineBatcher
     using System;
     using CommandlineBatcher.Diagnostics;
     using CommandlineBatcher.Internal;
+    using CommandlineBatcher.Match;
 
-    internal class ConsoleReporter : IBatchRunnerReporter, IConditionEvaluatorReporter
+    internal class ConsoleReporter : IBatchRunnerReporter, IConditionEvaluatorReporter, IMatchReporter
     {
         private readonly Verbosity verbosity;
 
@@ -69,6 +70,14 @@ namespace CommandlineBatcher
             {
                 Console.WriteLine($@"Evaluated '{lhs}' {@operator} '{rhs}' to {result}");
             }
+        }
+
+        public void Exception(Exception exception)
+        {
+            var backgroundColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(exception.ToString());
+            Console.ForegroundColor = backgroundColor;
         }
     }
 }

@@ -21,6 +21,9 @@ namespace CommandlineBatcher
 
     public class BatchRunner
     {
+        private const string PipeSeparator = "|";
+        private const string SemiColonSeparator = ";";
+        private const string CommaSeparator = ",";
         private readonly IProcessRunner processRunner;
         private readonly IFileSystem fileSystem;
         private readonly ConditionEvaluator conditionEvaluator;
@@ -104,6 +107,9 @@ namespace CommandlineBatcher
                 BatchSeparation.NewLine => batchesText.Split(Strings.NewLine, StringSplitOptions.RemoveEmptyEntries),
                 BatchSeparation.WindowsNewLine => batchesText.Split(Strings.WindowsNewLine, StringSplitOptions.RemoveEmptyEntries),
                 BatchSeparation.UnixNewLine => batchesText.Split(Strings.UnixNewLine, StringSplitOptions.RemoveEmptyEntries),
+                BatchSeparation.Pipe => batchesText.Split(PipeSeparator, StringSplitOptions.RemoveEmptyEntries),
+                BatchSeparation.SemiColon => batchesText.Split(SemiColonSeparator, StringSplitOptions.RemoveEmptyEntries),
+                BatchSeparation.Comma => batchesText.Split(CommaSeparator, StringSplitOptions.RemoveEmptyEntries),
                 _ => throw new ArgumentOutOfRangeException(nameof(batchSeparation), batchSeparation, $"Invalid batch separation value: {batchSeparation}")
             };
         }
