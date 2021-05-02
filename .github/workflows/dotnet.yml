@@ -33,7 +33,7 @@ jobs:
       run: >
         dotnet tool update Sundew.Packaging.Tool -g
 
-        dotnet tool update CommandlineBatcher -g --version 3.0.0-u20210502-203711-dev-match-support --add-source ${{ env.dev-source-latest-version }}
+        dotnet tool update CommandlineBatcher -g
 
         cb match --patterns
         "refs/heads/(?:master|main).* => stage=production|buildConfiguration=Release"
