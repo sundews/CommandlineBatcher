@@ -2,7 +2,7 @@
   "profiles": {
     "CommandLineBatcher": {
       "commandName": "Project",
-      "commandLineArgs": "?"
+      "commandLineArgs": "match --patterns \"refs/heads/(?:master|main).* => stage=production|buildConfiguration=Release\" \"refs/heads/release/.+ => stage=ci|buildConfiguration=Debug|dev-package-source-if-set= -s https://www.myget.org/F/sundew-dev/api/v3/index.json\" \"refs/heads/(?:develop.*|feature/(?<Postfix>.+)|bugfix/(?<Postfix>.+)) => stage=development|buildConfiguration=Debug|package-postfix={Postfix}|dev-package-source-if-set= -s https://www.myget.org/F/sundew-dev/api/v3/index.json\" \".+ => stage=none|buildConfiguration=Release\" --format \"::set-output name={0}::{1}\" -bvs = --input refs/heads/feature/match-support -lv normal"
     }
   }
 }

@@ -26,7 +26,7 @@ namespace CommandlineBatcher.Match
             string? format = null, 
             char? batchSeparator = null, 
             char? batchValueSeparator = null,
-            string mergeDelimiter = null, 
+            string? mergeDelimiter = null, 
             string? mergeFormat = null,
             string? outputPath = null)
         {

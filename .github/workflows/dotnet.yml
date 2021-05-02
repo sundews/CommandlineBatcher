@@ -35,10 +35,10 @@ jobs:
 
         dotnet tool update CommandlineBatcher -g --version 3.0.0-u20210502-201822-dev-match-support --add-source ${{ env.dev-source-latest-version }}
 
-        cb match --patterns -v normal
-        "(?:master|main).* => stage=production|buildConfiguration=Release"
-        "release/.+ => stage=ci|buildConfiguration=Debug|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
-        "(?:develop.*|feature/(?<Postfix>.+)|bugfix/(?<Postfix>.+)) => stage=development|buildConfiguration=Debug|package-postfix={Postfix}|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
+        cb match --patterns
+        "refs/heads/(?:master|main).* => stage=production|buildConfiguration=Release"
+        "refs/heads/release/.+ => stage=ci|buildConfiguration=Debug|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
+        "refs/heads/(?:develop.*|feature/(?<Postfix>.+)|bugfix/(?<Postfix>.+)) => stage=development|buildConfiguration=Debug|package-postfix={Postfix}|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
         ".+ => stage=none|buildConfiguration=Release"
         --format "::set-output name={0}::{1}"
         -bvs '='
