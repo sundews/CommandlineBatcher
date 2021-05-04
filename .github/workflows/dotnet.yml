@@ -33,16 +33,18 @@ jobs:
       run: >
         dotnet tool update Sundew.Packaging.Tool -g
 
-        dotnet tool update CommandlineBatcher -g --version 3.0.0-u20210502-203711-dev-match-support --add-source ${{ env.dev-source-latest-version }}
+        dotnet tool update CommandlineBatcher -g
 
         cb match --patterns
-        "refs/heads/(?:master|main).* => stage=production|buildConfiguration=Release"
-        "refs/heads/release/.+ => stage=ci|buildConfiguration=Debug|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
-        "refs/heads/(?:develop.*|feature/(?<Postfix>.+)|bugfix/(?<Postfix>.+)) => stage=development|buildConfiguration=Debug|package-postfix={Postfix}|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
+        "refs/heads/release/.+ => stage=production|buildConfiguration=Release"
+        "refs/heads/(?:master|main).* => stage=ci|buildConfiguration=Release|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
+        "refs/heads/(?:(?<BranchName>develop.*)|feature/(?<BranchName>.+)|bugfix/(?<BranchName>.+)) => stage=development|buildConfiguration=Debug|branch-name={BranchName}|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
         ".+ => stage=none|buildConfiguration=Release"
         --format "::set-output name={0}::{1}"
         -bvs '='
         --input ${{ github.ref }}
+
+        git rev-parse --short=8 HEAD | cb -c "|::set-output name=git-hash::{0}" "|::set-output name=git-hash-postfix::-{0}" --batches-stdin
     - name: Restore
       run: dotnet restore ${{ env.solutionPath }} --verbosity normal -s ${{ env.source }}${{ steps.build-setup.outputs.dev-package-source-if-set }}
     - name: Build
@@ -60,7 +62,8 @@ jobs:
         -p:"SppSymbolApiKey=${{ secrets.SPP_API_KEY }}"
         -p:"ContinuousIntegrationBuild=true"
         -p:"SppForceVersion=${{ secrets.SPP_FORCE_VERSION_IF_SET }}"
-        -p:"SppPrereleasePostfix=${{ steps.build-setup.outputs.package-postfix }}"
+        -p:"SppPrereleasePostfix=${{ steps.build-setup.outputs.branch-name }}${{ steps.build-setup.outputs.git-hash-postfix }}"
+        -p:"CommitId=${{ steps.build-setup.outputs.git-hash }}"
     - name: Test
       run: dotnet test ${{ env.solutionPath }} --verbosity normal --configuration ${{ steps.build-setup.outputs.buildConfiguration }} --no-build
     - name: 'Publish package(s)'
@@ -72,7 +75,7 @@ jobs:
       run: |
         git config user.email "sundew-dev@outlook.com"
         git config user.name "sundew-build"
-        cb -c "git|tag -a {1}-{0} -m "{1}-{0}"" "git|push ${{ env.repository }} {1}-{0}" -bvs ',' -bf ${{ env.source-package-versions }}
+        cb -c "git|tag -a {1} -m "{1}-{0}"" "git|push ${{ env.repository }} {1}" -bvs ',' -bf ${{ env.source-package-versions }}
     - name: 'Await stable package publish'
       if: ${{ success() && steps.build-setup.outputs.stage == 'production' }}
       run: cb -c "spt|await -s {3} {0}.{1}" -bvs ',' -bf ${{ env.source-package-versions }}
