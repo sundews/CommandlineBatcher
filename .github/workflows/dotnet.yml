@@ -38,13 +38,13 @@ jobs:
         cb match --patterns
         "refs/heads/release/.+ => stage=production|buildConfiguration=Release"
         "refs/heads/(?:master|main).* => stage=ci|buildConfiguration=Release|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
-        "refs/heads/(?:(?<BranchName>develop.*)|feature/(?<BranchName>.+)|bugfix/(?<BranchName>.+)) => stage=development|buildConfiguration=Debug|branch-name={BranchName}|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
+        "refs/heads/(?:(?<BranchName>develop.*)|feature/(?<BranchName>.+)|bugfix/(?<BranchName>.+)) => stage=development|buildConfiguration=Debug|branch-name={BranchName}-|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
         ".+ => stage=none|buildConfiguration=Release"
         --format "::set-output name={0}::{1}"
         -bvs '='
         --input ${{ github.ref }}
 
-        git rev-parse --short=8 HEAD | cb -c "|::set-output name=git-hash::{0}" "|::set-output name=git-hash-postfix::-{0}" --batches-stdin
+        git rev-parse --short=8 HEAD | cb -c "|::set-output name=git-hash::{0}" --batches-stdin
     - name: Restore
       run: dotnet restore ${{ env.solutionPath }} --verbosity normal -s ${{ env.source }}${{ steps.build-setup.outputs.dev-package-source-if-set }}
     - name: Build
@@ -62,7 +62,7 @@ jobs:
         -p:"SppSymbolApiKey=${{ secrets.SPP_API_KEY }}"
         -p:"ContinuousIntegrationBuild=true"
         -p:"SppForceVersion=${{ secrets.SPP_FORCE_VERSION_IF_SET }}"
-        -p:"SppPrereleasePostfix=${{ steps.build-setup.outputs.branch-name }}${{ steps.build-setup.outputs.git-hash-postfix }}"
+        -p:"SppPrereleasePostfix=${{ steps.build-setup.outputs.branch-name }}${{ steps.build-setup.outputs.git-hash }}"
         -p:"CommitId=${{ steps.build-setup.outputs.git-hash }}"
     - name: Test
       run: dotnet test ${{ env.solutionPath }} --verbosity normal --configuration ${{ steps.build-setup.outputs.buildConfiguration }} --no-build
