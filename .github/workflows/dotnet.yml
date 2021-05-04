@@ -38,7 +38,7 @@ jobs:
         cb match --patterns
         "refs/heads/release/.+ => stage=production|buildConfiguration=Release"
         "refs/heads/(?:master|main).* => stage=ci|buildConfiguration=Release|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
-        "refs/heads/(?<BranchName>develop.*|feature/.+|bugfix/.+) => stage=development|buildConfiguration=Debug|branch-name={BranchName}|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
+        "refs/heads/(?:(?<BranchName>develop.*)|(?<BranchName>feature/.+)|(?<BranchName>bugfix/.+)) => stage=development|buildConfiguration=Debug|branch-name={BranchName}|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
         ".+ => stage=none|buildConfiguration=Release"
         --format "::set-output name={0}::{1}"
         -bvs '='
@@ -63,7 +63,7 @@ jobs:
         -p:"ContinuousIntegrationBuild=true"
         -p:"SppForceVersion=${{ secrets.SPP_FORCE_VERSION_IF_SET }}"
         -p:"SppPrereleasePostfix=${{ steps.build-setup.outputs.branch-name }}${{ steps.build-setup.outputs.git-hash-postfix }}"
-        -p:"CommitHash=${{ steps.build-setup.outputs.git-hash }}"
+        -p:"CommitId=${{ steps.build-setup.outputs.git-hash }}"
     - name: Test
       run: dotnet test ${{ env.solutionPath }} --verbosity normal --configuration ${{ steps.build-setup.outputs.buildConfiguration }} --no-build
     - name: 'Publish package(s)'

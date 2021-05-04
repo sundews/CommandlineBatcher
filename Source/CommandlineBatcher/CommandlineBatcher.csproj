@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -27,9 +27,9 @@
   <Target Name="AddGitMetadaAssemblyAttributes"
           BeforeTargets="CoreGenerateAssemblyInfo">
     <ItemGroup>
-      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute" Condition="$(CommitHash) != ''" >
-        <_Parameter1>CommitHash</_Parameter1>
-        <_Parameter2>$(CommitHash)</_Parameter2>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute" Condition="$(CommitId) != ''" >
+        <_Parameter1>CommitId</_Parameter1>
+        <_Parameter2>$(CommitId)</_Parameter2>
       </AssemblyAttribute>
     </ItemGroup>
   </Target>
