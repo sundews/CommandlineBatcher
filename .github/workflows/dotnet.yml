@@ -38,7 +38,7 @@ jobs:
         cb match --patterns
         "refs/heads/release/.+ => stage=production|buildConfiguration=Release"
         "refs/heads/(?:master|main).* => stage=ci|buildConfiguration=Release|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
-        "refs/heads/(?:(?<BranchName>develop.*)|(?<BranchName>feature/.+)|(?<BranchName>bugfix/.+)) => stage=development|buildConfiguration=Debug|branch-name={BranchName}|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
+        "refs/heads/(?:(?<BranchName>develop.*)|feature/(?<BranchName>.+)|bugfix/(?<BranchName>.+)) => stage=development|buildConfiguration=Debug|branch-name={BranchName}|dev-package-source-if-set= -s ${{ env.dev-source-latest-version }}"
         ".+ => stage=none|buildConfiguration=Release"
         --format "::set-output name={0}::{1}"
         -bvs '='
