@@ -75,7 +75,7 @@ jobs:
       run: |
         git config user.email "sundew-dev@outlook.com"
         git config user.name "sundew-build"
-        cb -c "git|tag -a {1} -m "{1}-{0}"" "git|push ${{ env.repository }} {1}" -bvs ',' -bf ${{ env.source-package-versions }}
+        cb -c "git|tag -a v.{1} -m "{1}-{0}"" "git|push ${{ env.repository }} v.{1}" -bvs ',' -bf ${{ env.source-package-versions }}
     - name: 'Await stable package publish'
       if: ${{ success() && steps.build-setup.outputs.stage == 'production' }}
       run: cb -c "spt|await -s {3} {0}.{1}" -bvs ',' -bf ${{ env.source-package-versions }}
