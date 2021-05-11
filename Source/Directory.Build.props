@@ -4,5 +4,6 @@
    <Version>3.0</Version>
    <OutputPath>bin/$(Configuration)</OutputPath>
    <Nullable>enable</Nullable>
+   <LangVersion>9</LangVersion>
  </PropertyGroup>
 </Project>

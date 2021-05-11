@@ -37,8 +37,6 @@ namespace CommandlineBatcher.Diagnostics
 
         string ProcessName { get; }
 
-        Task WaitForExitAsync(CancellationToken cancellationToken);
-
         void WaitForExit();
     }
 }

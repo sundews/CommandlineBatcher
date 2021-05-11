@@ -46,7 +46,8 @@ namespace CommandlineBatcher.Diagnostics
 
         public Task WaitForExitAsync(CancellationToken cancellationToken)
         {
-            return this.process.WaitForExitAsync(cancellationToken);
+            this.process.WaitForExit();
+            return Task.CompletedTask;
         }
 
         public void WaitForExit()
