@@ -20,5 +20,10 @@ namespace CommandlineBatcher.Internal
         {
             return File.Exists(path);
         }
+
+        public string GetCurrentDirectory()
+        {
+            return Directory.GetCurrentDirectory();
+        }
     }
 }

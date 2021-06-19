@@ -2,7 +2,7 @@
   "profiles": {
     "CommandLineBatcher": {
       "commandName": "Project",
-      "commandLineArgs": "?"
+      "commandLineArgs": "-c \"|::set-output name=buildConfiguration::Release\" --batches-stdin"
     }
   }
 }

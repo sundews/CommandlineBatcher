@@ -7,7 +7,9 @@
 
 namespace CommandlineBatcher.Match
 {
+    using CommandlineBatcher.Internal;
     using System;
+    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
@@ -15,17 +17,19 @@ namespace CommandlineBatcher.Match
 
     public class MatchFacade
     {
-        private const string PatternRegexFormat = @"^(?<MatchRegex>.+?)\s?=\>\s?(?<Values>[^\{0}]+)(?:\{0}(?<Values>[^\{0}]+))*";
+        private const string PatternRegexFormat = @"^(?<StartQuote>\')?(?<MatchRegex>.+?)(?<StopQuote-StartQuote>\')?(?(StartQuote)(?!))\s*=\>\s?(?<Values>[^\{0}]*)(?:\{0}(?<Values>[^\{0}]+))*";
         private const string MatchRegex = "MatchRegex";
         private const string Values = "Values";
         private readonly IInputter inputter;
         private readonly IOutputter outputter;
+        private readonly IFileSystem fileSystem;
         private readonly IMatchReporter matchReporter;
 
-        public MatchFacade(IInputter inputter, IOutputter outputter, IMatchReporter matchReporter)
+        public MatchFacade(IInputter inputter, IOutputter outputter, IFileSystem fileSystem, IMatchReporter matchReporter)
         {
             this.inputter = inputter;
             this.outputter = outputter;
+            this.fileSystem = fileSystem;
             this.matchReporter = matchReporter;
         }
 
@@ -53,8 +57,9 @@ namespace CommandlineBatcher.Match
                         return 0;
                     }
 
+                    var workingDirectory = string.IsNullOrEmpty(matchVerb.WorkingDirectory) ? this.fileSystem.GetCurrentDirectory() : Path.GetFullPath(matchVerb.WorkingDirectory);
                     var stringBuilder = new StringBuilder();
-                    Formatter.AppendFormat(stringBuilder, matchVerb.Format, matchAndValues.values[0], matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator);
+                    Formatter.AppendFormat(stringBuilder, matchVerb.Format, matchAndValues.values[0], matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator, workingDirectory);
                     if (string.IsNullOrEmpty(matchVerb.MergeFormat))
                     {
                         await this.outputter.OutputAsync(stringBuilder.ToString());
@@ -69,7 +74,7 @@ namespace CommandlineBatcher.Match
                             stringBuilder.Append(matchVerb.MergeDelimiter);
                         }
 
-                        Formatter.AppendFormat(stringBuilder, matchVerb.Format, value, matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator);
+                        Formatter.AppendFormat(stringBuilder, matchVerb.Format, value, matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator, workingDirectory);
                         if (!shouldMerge)
                         {
                             await this.outputter.OutputAsync(stringBuilder.ToString());

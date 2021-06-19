@@ -21,13 +21,14 @@ namespace CommandlineBatcher.Match
         private const string WindowsNewLine = "{WNL}";
         private const string UnixNewLine = "{UNL}";
         private const string NewLine = "{NL}";
+        private const string CurrentDirectory = "{CurrentDirectory}";
         private const string DoubleQuoteName = "{DQ}";
         private const string DoubleQuote = "\"";
 
-        public static void AppendFormat(StringBuilder stringBuilder, string? format, string value, Regex regex, GroupCollection matchGroups, char batchValueSeparator)
+        public static void AppendFormat(StringBuilder stringBuilder, string? format, string value, Regex regex, GroupCollection matchGroups, char batchValueSeparator, string workingDirectory)
         {
-            format = ReplaceKnownCharacters(format);
-            value = ReplaceKnownCharacters(value)!;
+            format = ReplaceKnownCharacters(format, workingDirectory);
+            value = ReplaceKnownCharacters(value, workingDirectory)!;
             foreach (var groupName in regex.GetGroupNames())
             {
                 if (groupName == regex.GroupNumberFromName(groupName).ToString())
@@ -49,7 +50,7 @@ namespace CommandlineBatcher.Match
             }
 
             var lastWasInSeparator = false;
-            var values = value.AsMemory().Split((character, _, _) =>
+            var values = value.AsMemory().Split((character, index, _) =>
                 {
                     var wasInSeparator = lastWasInSeparator;
                     if (wasInSeparator)
@@ -64,6 +65,11 @@ namespace CommandlineBatcher.Match
                             return SplitAction.Include;
                         }
 
+                        if (index == 0)
+                        {
+                            return SplitAction.Split;
+                        }
+
                         lastWasInSeparator = true;
                         return SplitAction.Ignore;
                     }
@@ -74,12 +80,13 @@ namespace CommandlineBatcher.Match
                     }
 
                     return SplitAction.Include;
-                }).ToArray(x => x.ToString());
+                },
+                SplitOptions.None).ToArray(x => x.ToString());
 
             stringBuilder.AppendFormat(format, values);
         }
 
-        private static string? ReplaceKnownCharacters(string? value)
+        private static string? ReplaceKnownCharacters(string? value, string currentDirectory)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -89,7 +96,8 @@ namespace CommandlineBatcher.Match
             return value.Replace(WindowsNewLine, Strings.WindowsNewLine)
                 .Replace(UnixNewLine, Strings.UnixNewLine)
                 .Replace(NewLine, Environment.NewLine)
-                .Replace(DoubleQuoteName, DoubleQuote);
+                .Replace(DoubleQuoteName, DoubleQuote)
+                .Replace(CurrentDirectory, currentDirectory);
         }
     }
 }

@@ -56,9 +56,9 @@ Help
 CommandlineBatcher is being used in various git repositories to automate version tagging of stable releases and wait for all releases to be published to NuGet.
 
 ** Github flow workflow (also compatible with git flow)**
-https://github.com/hugener/Sundew.Generator/blob/main/.github/workflows/dotnet.yml
+https://github.com/sundews/Sundew.Generator/blob/main/.github/workflows/dotnet.yml
 
-https://github.com/hugener/Sundew.CommandLine/blob/main/.github/workflows/dotnet.yml
+https://github.com/sundews/Sundew.CommandLine/blob/main/.github/workflows/dotnet.yml
 
 ** Trunk based development workflow**
-https://github.com/hugener/CommandlineBatcher/blob/main/.github/workflows/dotnet.yml
+https://github.com/sundews/CommandlineBatcher/blob/main/.github/workflows/dotnet.yml

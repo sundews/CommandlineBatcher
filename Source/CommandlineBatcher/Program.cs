@@ -1,6 +1,7 @@
 ﻿namespace CommandlineBatcher
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using CommandlineBatcher.Diagnostics;
@@ -44,11 +45,19 @@
 
         private static async ValueTask<Result<int, ParserError<int>>> ExecuteMatchAsync(MatchVerb matchVerb)
         {
-            IOutputter outputter = matchVerb.OutputPath != null
-                ? new FileOutputter(matchVerb.OutputPath)
-                : new ConsoleOutputter();
+            var outputters = new List<IOutputter>();
+            if (!matchVerb.SkipConsoleOutput)
+            {
+                outputters.Add(new ConsoleOutputter());
+            }
+
+            if (matchVerb.OutputPath != null)
+            {
+                outputters.Add(new FileOutputter(matchVerb.OutputPath));
+            }
+
             IInputter inputter = matchVerb.UseStandardInput ? new ConsoleInputter() : new Inputter(matchVerb.Input!);
-            var matchFacade = new MatchFacade(inputter, outputter, new ConsoleReporter(matchVerb.Verbosity));
+            var matchFacade = new MatchFacade(inputter, new AggregateOutputter(outputters), new FileSystem(), new ConsoleReporter(matchVerb.Verbosity));
             return Result.Success(await matchFacade.MatchAsync(matchVerb));
         }
     }

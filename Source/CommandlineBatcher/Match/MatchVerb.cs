@@ -8,6 +8,7 @@
 namespace CommandlineBatcher.Match
 {
     using System.Collections.Generic;
+    using System.IO;
     using Sundew.CommandLine;
 
     public class MatchVerb : IVerb
@@ -28,7 +29,9 @@ namespace CommandlineBatcher.Match
             char? batchValueSeparator = null,
             string? mergeDelimiter = null, 
             string? mergeFormat = null,
-            string? outputPath = null)
+            string? outputPath = null,
+            bool skipConsoleOutput = false,
+            string? workingDirectory = null)
         {
             this.patterns = patterns;
             this.BatchSeparator = batchSeparator ?? '|';
@@ -38,7 +41,9 @@ namespace CommandlineBatcher.Match
             this.Format = format;
             this.MergeDelimiter = mergeDelimiter;
             this.OutputPath = outputPath;
+            this.SkipConsoleOutput = skipConsoleOutput;
             this.MergeFormat = mergeFormat;
+            this.WorkingDirectory = workingDirectory ?? Directory.GetCurrentDirectory();
         }
 
         public IReadOnlyList<string> Patterns => this.patterns;
@@ -59,7 +64,11 @@ namespace CommandlineBatcher.Match
 
         public string? MergeFormat { get; private set; }
 
+        public string WorkingDirectory { get; private set; }
+
         public Verbosity Verbosity { get; private set; }
+
+        public bool SkipConsoleOutput { get; private set; }
 
         public IVerb? NextVerb { get; } = null;
 
@@ -84,8 +93,10 @@ Batches can also contain regex group names in the format {group-name}", true);
             argumentsBuilder.AddOptional("md", "merge-delimiter", () => this.MergeDelimiter, s => this.MergeDelimiter = s, "Specifies the delimiter used between values when merging");
             argumentsBuilder.AddOptional("m", "merge-format", () => this.MergeFormat, s => this.MergeFormat = s, @"Indicates whether batches should be merged and specifies
 the format to be used for merging");
+            argumentsBuilder.AddSwitch("nso", "skip-stdout-output", this.SkipConsoleOutput, b => this.SkipConsoleOutput = b, "Determines whether outputting to stdout should be skipped.");
             argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
             argumentsBuilder.AddOptionalValue("output-path", () => this.OutputPath, s => this.OutputPath = s, "The output path, if not specified application will output to stdout");
+            argumentsBuilder.AddOptional("wd", "working-directory", () => this.WorkingDirectory, s => this.WorkingDirectory = s, "The working directory", true, defaultValueText: "Current directory");
         }
     }
 }

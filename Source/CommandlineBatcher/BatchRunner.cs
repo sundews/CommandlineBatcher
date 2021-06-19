@@ -103,7 +103,7 @@ namespace CommandlineBatcher
         {
             return batchSeparation switch
             {
-                BatchSeparation.CommandLine => batchesText.AsMemory().Trim().ParseCommandLineArguments(),
+                BatchSeparation.CommandLine => batchesText.AsMemory().Trim().ParseCommandLineArguments().Select(x => x.ToString()),
                 BatchSeparation.NewLine => batchesText.Split(Strings.NewLine, StringSplitOptions.RemoveEmptyEntries),
                 BatchSeparation.WindowsNewLine => batchesText.Split(Strings.WindowsNewLine, StringSplitOptions.RemoveEmptyEntries),
                 BatchSeparation.UnixNewLine => batchesText.Split(Strings.UnixNewLine, StringSplitOptions.RemoveEmptyEntries),

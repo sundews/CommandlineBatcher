@@ -1,9 +1,20 @@
 <Project>
  <PropertyGroup>
    <Deterministic>true</Deterministic>
-   <Version>3.0</Version>
+   <Version>4.0</Version>
    <OutputPath>bin/$(Configuration)</OutputPath>
    <Nullable>enable</Nullable>
    <LangVersion>9</LangVersion>
+   <Company>Hukano</Company>
+   <Authors>Kim Hugener-Ohlsen</Authors>
+   <Copyright>Kim Hugener-Ohlsen</Copyright>
+   <RepositoryUrl>https://github.com/sundews/CommandlineBatcher</RepositoryUrl>
+   <PackageProjectUrl>https://github.com/sundews/CommandlineBatcher</PackageProjectUrl>
+   <RepositoryType>git</RepositoryType>
+   <PackageLicenseExpression>MIT</PackageLicenseExpression>
+   <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+   <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+   <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+   <WarningsAsErrors />
  </PropertyGroup>
 </Project>
