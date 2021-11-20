@@ -7,6 +7,7 @@
 
 namespace CommandlineBatcher.Tests
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
@@ -39,7 +40,7 @@ namespace CommandlineBatcher.Tests
                 psi =>
                 {
                     var process = New.Mock<IProcess>();
-                    process.SetupGet(x => x.StandardOutput).Returns(new StreamReader(new MemoryStream(new byte[0])));
+                    process.SetupGet(x => x.StandardOutput).Returns(new StreamReader(new MemoryStream(Array.Empty<byte>())));
                     process.SetupGet(x => x.StartInfo).Returns(psi);
                     return process;
                 });
@@ -66,7 +67,7 @@ namespace CommandlineBatcher.Tests
                 psi =>
                 {
                     var process = New.Mock<IProcess>();
-                    process.SetupGet(x => x.StandardOutput).Returns(new StreamReader(new MemoryStream(new byte[0])));
+                    process.SetupGet(x => x.StandardOutput).Returns(new StreamReader(new MemoryStream(Array.Empty<byte>())));
                     process.SetupGet(x => x.StartInfo).Returns(psi);
                     return process;
                 });
