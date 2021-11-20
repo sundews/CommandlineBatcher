@@ -23,10 +23,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Setup .NET 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
@@ -36,7 +32,7 @@ jobs:
       run: >
         dotnet tool update Sundew.Packaging.Tool -g --version 8.*
 
-        dotnet tool update CommandlineBatcher -g --version 3.*
+        dotnet tool update CommandlineBatcher -g --version 4.*
 
         git rev-parse --short=10 HEAD | cb -c "|::set-output name=git-hash::{0}" --batches-stdin
     - name: Stage Build
