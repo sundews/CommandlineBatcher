@@ -5,87 +5,86 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher
+namespace CommandlineBatcher;
+
+using System;
+using CommandlineBatcher.Diagnostics;
+using CommandlineBatcher.Internal;
+using CommandlineBatcher.Match;
+
+internal class ConsoleReporter : IBatchRunnerReporter, IConditionEvaluatorReporter, IMatchReporter
 {
-    using System;
-    using CommandlineBatcher.Diagnostics;
-    using CommandlineBatcher.Internal;
-    using CommandlineBatcher.Match;
+    private readonly Verbosity verbosity;
 
-    internal class ConsoleReporter : IBatchRunnerReporter, IConditionEvaluatorReporter, IMatchReporter
+    public ConsoleReporter(Verbosity verbosity)
     {
-        private readonly Verbosity verbosity;
+        this.verbosity = verbosity;
+    }
 
-        public ConsoleReporter(Verbosity verbosity)
+    public void Started(IProcess process)
+    {
+        if (this.verbosity == Verbosity.Detailed || this.verbosity == Verbosity.Normal)
         {
-            this.verbosity = verbosity;
+            Console.WriteLine($"Started: {process.StartInfo.FileName} {process.StartInfo.Arguments} ({process.Id})");
+        }
+    }
+
+    public void ReportMessage(IProcess process, string line)
+    {
+        if (this.verbosity == Verbosity.Detailed)
+        {
+            Console.WriteLine($"{process.StartInfo.FileName} ({process.Id}) reported:{Environment.NewLine}{line}");
+            return;
         }
 
-        public void Started(IProcess process)
+        Console.WriteLine(line);
+    }
+
+    public void ProcessExited(IProcess process)
+    {
+        if (this.verbosity == Verbosity.Detailed)
         {
-            if (this.verbosity == Verbosity.Detailed || this.verbosity == Verbosity.Normal)
-            {
-                Console.WriteLine($"Started: {process.StartInfo.FileName} {process.StartInfo.Arguments} ({process.Id})");
-            }
+            Console.WriteLine($"{process.StartInfo.FileName} ({process.Id}) exited with exit code: {process.ExitCode}");
         }
+    }
 
-        public void ReportMessage(IProcess process, string line)
+    public void FileNotFound(string valuesFile)
+    {
+        if (this.verbosity != Verbosity.Quiet)
         {
-            if (this.verbosity == Verbosity.Detailed)
-            {
-                Console.WriteLine($"{process.StartInfo.FileName} ({process.Id}) reported:{Environment.NewLine}{line}");
-                return;
-            }
-
-            Console.WriteLine(line);
+            Console.WriteLine($@"{valuesFile} was not found and will be ignored");
         }
+    }
 
-        public void ProcessExited(IProcess process)
+    public void Error(IProcess process)
+    {
+        if (this.verbosity != Verbosity.Quiet)
         {
-            if (this.verbosity == Verbosity.Detailed)
-            {
-                Console.WriteLine($"{process.StartInfo.FileName} ({process.Id}) exited with exit code: {process.ExitCode}");
-            }
+            Console.WriteLine($@"{process.StartInfo.FileName} {process.StartInfo.Arguments} ({process.Id}) failed with {process.ExitCode}");
         }
+    }
 
-        public void FileNotFound(string valuesFile)
+    public void Evaluated(string lhs, string @operator, string rhs, bool result)
+    {
+        if (this.verbosity != Verbosity.Quiet)
         {
-            if (this.verbosity != Verbosity.Quiet)
-            {
-                Console.WriteLine($@"{valuesFile} was not found and will be ignored");
-            }
+            Console.WriteLine($@"Evaluated '{lhs}' {@operator} '{rhs}' to {result}");
         }
+    }
 
-        public void Error(IProcess process)
-        {
-            if (this.verbosity != Verbosity.Quiet)
-            {
-                Console.WriteLine($@"{process.StartInfo.FileName} {process.StartInfo.Arguments} ({process.Id}) failed with {process.ExitCode}");
-            }
-        }
+    public void Exception(Exception exception)
+    {
+        var backgroundColor = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(exception.ToString());
+        Console.ForegroundColor = backgroundColor;
+    }
 
-        public void Evaluated(string lhs, string @operator, string rhs, bool result)
+    public void Report(string message)
+    {
+        if (this.verbosity != Verbosity.Quiet)
         {
-            if (this.verbosity != Verbosity.Quiet)
-            {
-                Console.WriteLine($@"Evaluated '{lhs}' {@operator} '{rhs}' to {result}");
-            }
-        }
-
-        public void Exception(Exception exception)
-        {
-            var backgroundColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(exception.ToString());
-            Console.ForegroundColor = backgroundColor;
-        }
-
-        public void Report(string message)
-        {
-            if (this.verbosity != Verbosity.Quiet)
-            {
-                Console.WriteLine(message);
-            }
+            Console.WriteLine(message);
         }
     }
 }

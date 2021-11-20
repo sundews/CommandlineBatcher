@@ -5,38 +5,37 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Diagnostics
+namespace CommandlineBatcher.Diagnostics;
+
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+public interface IProcess
 {
-    using System;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
+    int ExitCode { get; }
 
-    public interface IProcess
-    {
-        int ExitCode { get; }
+    bool HasExited { get; }
 
-        bool HasExited { get; }
+    DateTime StartTime { get; }
 
-        DateTime StartTime { get; }
+    DateTime ExitTime { get; }
 
-        DateTime ExitTime { get; }
+    int Id { get; }
 
-        int Id { get; }
+    string MachineName { get; }
 
-        string MachineName { get; }
+    StreamReader StandardOutput { get; }
 
-        StreamReader StandardOutput { get; }
+    StreamReader StandardError { get; }
 
-        StreamReader StandardError { get; }
+    StreamWriter StandardInput { get; }
 
-        StreamWriter StandardInput { get; }
+    ProcessStartInfo StartInfo { get; }
 
-        ProcessStartInfo StartInfo { get; }
+    string ProcessName { get; }
 
-        string ProcessName { get; }
-
-        void WaitForExit();
-    }
+    void WaitForExit();
 }

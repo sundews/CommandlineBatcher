@@ -5,22 +5,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Match
+namespace CommandlineBatcher.Match;
+
+using System.Threading.Tasks;
+
+public class Inputter : IInputter
 {
-    using System.Threading.Tasks;
+    private readonly string input;
 
-    public class Inputter : IInputter
+    public Inputter(string input)
     {
-        private readonly string input;
+        this.input = input;
+    }
 
-        public Inputter(string input)
-        {
-            this.input = input;
-        }
-
-        public Task<string> GetInputAsync()
-        {
-            return Task.FromResult(input);
-        }
+    public Task<string> GetInputAsync()
+    {
+        return Task.FromResult(input);
     }
 }

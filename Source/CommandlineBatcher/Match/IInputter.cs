@@ -5,12 +5,11 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Match
-{
-    using System.Threading.Tasks;
+namespace CommandlineBatcher.Match;
 
-    public interface IInputter
-    {
-        Task<string> GetInputAsync();
-    }
+using System.Threading.Tasks;
+
+public interface IInputter
+{
+    Task<string> GetInputAsync();
 }

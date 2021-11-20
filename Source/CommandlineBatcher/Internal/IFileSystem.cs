@@ -1,11 +1,10 @@
-﻿namespace CommandlineBatcher.Internal
+﻿namespace CommandlineBatcher.Internal;
+
+public interface IFileSystem
 {
-    public interface IFileSystem
-    {
-        string ReadAllText(string path);
+    string ReadAllText(string path);
 
-        bool FileExists(string path);
+    bool FileExists(string path);
 
-        string GetCurrentDirectory();
-    }
+    string GetCurrentDirectory();
 }

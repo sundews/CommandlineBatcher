@@ -5,22 +5,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher
+namespace CommandlineBatcher;
+
+using System;
+
+public class Values
 {
-    using System;
-
-    public class Values
+    public Values(params string[] arguments)
     {
-        public Values(params string[] arguments)
-        {
-            this.Arguments = arguments;
-        }
+        this.Arguments = arguments;
+    }
 
-        public string[] Arguments { get; }
+    public string[] Arguments { get; }
 
-        public static Values From(string value, string batchValueSeparator)
-        {
-            return new(value.Split(batchValueSeparator, StringSplitOptions.RemoveEmptyEntries));
-        }
+    public static Values From(string value, string batchValueSeparator)
+    {
+        return new(value.Split(batchValueSeparator, StringSplitOptions.RemoveEmptyEntries));
     }
 }

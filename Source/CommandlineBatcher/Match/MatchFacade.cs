@@ -5,101 +5,100 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Match
+namespace CommandlineBatcher.Match;
+
+using CommandlineBatcher.Internal;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+public class MatchFacade
 {
-    using CommandlineBatcher.Internal;
-    using System;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
+    private const string PatternRegexFormat = @"^(?<StartQuote>\')?(?<MatchRegex>.+?)(?<StopQuote-StartQuote>\')?(?(StartQuote)(?!))\s*=\>\s?(?<Values>[^\{0}]*)(?:\{0}(?<Values>[^\{0}]+))*";
+    private const string MatchRegex = "MatchRegex";
+    private const string Values = "Values";
+    private readonly IInputter inputter;
+    private readonly IOutputter outputter;
+    private readonly IFileSystem fileSystem;
+    private readonly IMatchReporter matchReporter;
 
-    public class MatchFacade
+    public MatchFacade(IInputter inputter, IOutputter outputter, IFileSystem fileSystem, IMatchReporter matchReporter)
     {
-        private const string PatternRegexFormat = @"^(?<StartQuote>\')?(?<MatchRegex>.+?)(?<StopQuote-StartQuote>\')?(?(StartQuote)(?!))\s*=\>\s?(?<Values>[^\{0}]*)(?:\{0}(?<Values>[^\{0}]+))*";
-        private const string MatchRegex = "MatchRegex";
-        private const string Values = "Values";
-        private readonly IInputter inputter;
-        private readonly IOutputter outputter;
-        private readonly IFileSystem fileSystem;
-        private readonly IMatchReporter matchReporter;
+        this.inputter = inputter;
+        this.outputter = outputter;
+        this.fileSystem = fileSystem;
+        this.matchReporter = matchReporter;
+    }
 
-        public MatchFacade(IInputter inputter, IOutputter outputter, IFileSystem fileSystem, IMatchReporter matchReporter)
+    public async Task<int> MatchAsync(MatchVerb matchVerb)
+    {
+        try
         {
-            this.inputter = inputter;
-            this.outputter = outputter;
-            this.fileSystem = fileSystem;
-            this.matchReporter = matchReporter;
-        }
+            var input = await this.inputter.GetInputAsync();
 
-        public async Task<int> MatchAsync(MatchVerb matchVerb)
-        {
-            try
+            var patternsRegex = new Regex(string.Format(PatternRegexFormat, matchVerb.BatchSeparator), RegexOptions.ExplicitCapture);
+            var patternMatches = matchVerb.Patterns.Select(x =>
             {
-                var input = await this.inputter.GetInputAsync();
+                var pattern = patternsRegex.Match(x);
+                var patternText = pattern.Groups[MatchRegex].Value;
+                return (regex: new Regex(patternText), values: pattern.Groups[Values].Captures.Select(capture => capture.Value).ToArray(), pattern: patternText);
+            });
 
-                var patternsRegex = new Regex(string.Format(PatternRegexFormat, matchVerb.BatchSeparator), RegexOptions.ExplicitCapture);
-                var patternMatches = matchVerb.Patterns.Select(x =>
+            var shouldMerge = matchVerb.MergeFormat != null || matchVerb.MergeDelimiter != null;
+            var matchAndValues = patternMatches.Select(tuple => (match: tuple.regex.Match(input), tuple.regex, tuple.values, tuple.pattern)).FirstOrDefault(tuple => tuple.match.Success);
+            if (matchAndValues != default)
+            {
+                this.matchReporter.Report($"The input: {input} matched: {matchAndValues.pattern}");
+                if (matchAndValues.values.Length == 0)
                 {
-                    var pattern = patternsRegex.Match(x);
-                    var patternText = pattern.Groups[MatchRegex].Value;
-                    return (regex: new Regex(patternText), values: pattern.Groups[Values].Captures.Select(capture => capture.Value).ToArray(), pattern: patternText);
-                });
+                    return 0;
+                }
 
-                var shouldMerge = matchVerb.MergeFormat != null || matchVerb.MergeDelimiter != null;
-                var matchAndValues = patternMatches.Select(tuple => (match: tuple.regex.Match(input), tuple.regex, tuple.values, tuple.pattern)).FirstOrDefault(tuple => tuple.match.Success);
-                if (matchAndValues != default)
+                var workingDirectory = string.IsNullOrEmpty(matchVerb.WorkingDirectory) ? this.fileSystem.GetCurrentDirectory() : Path.GetFullPath(matchVerb.WorkingDirectory);
+                var stringBuilder = new StringBuilder();
+                Formatter.AppendFormat(stringBuilder, matchVerb.Format, matchAndValues.values[0], matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator, workingDirectory);
+                if (string.IsNullOrEmpty(matchVerb.MergeFormat))
                 {
-                    this.matchReporter.Report($"The input: {input} matched: {matchAndValues.pattern}");
-                    if (matchAndValues.values.Length == 0)
+                    await this.outputter.OutputAsync(stringBuilder.ToString());
+                    stringBuilder.Clear();
+                }
+
+                for (var index = 1; index < matchAndValues.values.Length; index++)
+                {
+                    var value = matchAndValues.values[index];
+                    if (matchVerb.MergeDelimiter != null)
                     {
-                        return 0;
+                        stringBuilder.Append(matchVerb.MergeDelimiter);
                     }
 
-                    var workingDirectory = string.IsNullOrEmpty(matchVerb.WorkingDirectory) ? this.fileSystem.GetCurrentDirectory() : Path.GetFullPath(matchVerb.WorkingDirectory);
-                    var stringBuilder = new StringBuilder();
-                    Formatter.AppendFormat(stringBuilder, matchVerb.Format, matchAndValues.values[0], matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator, workingDirectory);
-                    if (string.IsNullOrEmpty(matchVerb.MergeFormat))
+                    Formatter.AppendFormat(stringBuilder, matchVerb.Format, value, matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator, workingDirectory);
+                    if (!shouldMerge)
                     {
                         await this.outputter.OutputAsync(stringBuilder.ToString());
                         stringBuilder.Clear();
                     }
-
-                    for (var index = 1; index < matchAndValues.values.Length; index++)
-                    {
-                        var value = matchAndValues.values[index];
-                        if (matchVerb.MergeDelimiter != null)
-                        {
-                            stringBuilder.Append(matchVerb.MergeDelimiter);
-                        }
-
-                        Formatter.AppendFormat(stringBuilder, matchVerb.Format, value, matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator, workingDirectory);
-                        if (!shouldMerge)
-                        {
-                            await this.outputter.OutputAsync(stringBuilder.ToString());
-                            stringBuilder.Clear();
-                        }
-                    }
-
-                    if (matchVerb.MergeFormat != null)
-                    {
-                        await this.outputter.OutputAsync(string.Format(matchVerb.MergeFormat, stringBuilder));
-                        stringBuilder.Clear();
-                    }
                 }
-                else
+
+                if (matchVerb.MergeFormat != null)
                 {
-                    this.matchReporter.Report($"The input: {input} did not match any pattern.");
+                    await this.outputter.OutputAsync(string.Format(matchVerb.MergeFormat, stringBuilder));
+                    stringBuilder.Clear();
                 }
-
-                return 0;
             }
-            catch (Exception e)
+            else
             {
-                this.matchReporter.Exception(e);
-                return -1;
+                this.matchReporter.Report($"The input: {input} did not match any pattern.");
             }
+
+            return 0;
+        }
+        catch (Exception e)
+        {
+            this.matchReporter.Exception(e);
+            return -1;
         }
     }
 }

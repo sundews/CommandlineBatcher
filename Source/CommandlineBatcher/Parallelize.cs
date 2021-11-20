@@ -5,11 +5,10 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher
+namespace CommandlineBatcher;
+
+public enum Parallelize
 {
-    public enum Parallelize
-    {
-        Commands,
-        Batches,
-    }
+    Commands,
+    Batches,
 }

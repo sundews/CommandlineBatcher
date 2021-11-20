@@ -5,16 +5,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Match
-{
-    using System;
-    using System.Threading.Tasks;
+namespace CommandlineBatcher.Match;
 
-    public class ConsoleInputter : IInputter
+using System;
+using System.Threading.Tasks;
+
+public class ConsoleInputter : IInputter
+{
+    public Task<string> GetInputAsync()
     {
-        public Task<string> GetInputAsync()
-        {
-            return Console.In.ReadToEndAsync();
-        }
+        return Console.In.ReadToEndAsync();
     }
 }

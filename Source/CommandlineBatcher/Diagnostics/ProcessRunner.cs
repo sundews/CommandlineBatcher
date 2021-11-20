@@ -5,21 +5,20 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Diagnostics
+namespace CommandlineBatcher.Diagnostics;
+
+using System.Diagnostics;
+
+public class ProcessRunner : IProcessRunner
 {
-    using System.Diagnostics;
-
-    public class ProcessRunner : IProcessRunner
+    public IProcess? Run(ProcessStartInfo processStartInfo)
     {
-        public IProcess? Run(ProcessStartInfo processStartInfo)
+        var process = System.Diagnostics.Process.Start(processStartInfo);
+        if (process == null)
         {
-            var process = System.Diagnostics.Process.Start(processStartInfo);
-            if (process == null)
-            {
-                return null;
-            }
-
-            return new Process(process);
+            return null;
         }
+
+        return new Process(process);
     }
 }

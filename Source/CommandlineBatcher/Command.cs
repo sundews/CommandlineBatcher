@@ -5,18 +5,17 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher
+namespace CommandlineBatcher;
+
+public class Command
 {
-    public class Command
+    public Command(string executable, string arguments)
     {
-        public Command(string executable, string arguments)
-        {
-            this.Executable = executable;
-            this.Arguments = arguments;
-        }
-
-        public string Executable { get; }
-
-        public string Arguments { get; }
+        this.Executable = executable;
+        this.Arguments = arguments;
     }
+
+    public string Executable { get; }
+
+    public string Arguments { get; }
 }

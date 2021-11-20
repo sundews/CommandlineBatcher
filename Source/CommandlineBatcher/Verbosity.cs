@@ -5,13 +5,12 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher
+namespace CommandlineBatcher;
+
+public enum Verbosity
 {
-    public enum Verbosity
-    {
-        Normal,
-        Errors,
-        Quiet,
-        Detailed,
-    }
+    Normal,
+    Errors,
+    Quiet,
+    Detailed,
 }

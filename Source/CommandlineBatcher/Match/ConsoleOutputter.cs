@@ -5,17 +5,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Match
-{
-    using System;
-    using System.Threading.Tasks;
+namespace CommandlineBatcher.Match;
 
-    public class ConsoleOutputter : IOutputter
+using System;
+using System.Threading.Tasks;
+
+public class ConsoleOutputter : IOutputter
+{
+    public Task OutputAsync(string contents)
     {
-        public Task OutputAsync(string contents)
-        {
-            Console.WriteLine(contents);
-            return Task.CompletedTask;
-        }
+        Console.WriteLine(contents);
+        return Task.CompletedTask;
     }
 }

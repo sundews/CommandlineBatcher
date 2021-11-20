@@ -5,37 +5,36 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Tests.Internal
+namespace CommandlineBatcher.Tests.Internal;
+
+using CommandlineBatcher.Internal;
+using FluentAssertions;
+using Moq;
+using Xunit;
+
+public class ConditionEvaluatorTests
 {
-    using CommandlineBatcher.Internal;
-    using FluentAssertions;
-    using Moq;
-    using Xunit;
-
-    public class ConditionEvaluatorTests
+    [Theory]
+    [InlineData("lhs=={0}", "lhs", true)]
+    [InlineData("lhs=={0}", "rhs", false)]
+    [InlineData("lhs == {0}", "lhs", true)]
+    [InlineData("lhs == {0}", "rhs", false)]
+    [InlineData("lhs =={0}", "lhs", true)]
+    [InlineData("lhs =={0}", "rhs", false)]
+    [InlineData("lhs with space =={0}", "lhs with space", true)]
+    [InlineData("lhs with space =={0}", "rhs with space", false)]
+    [InlineData("lhs with space !={0}", "lhs with space", false)]
+    [InlineData("lhs with space     =={0}", "lhs with space    ", true)]
+    [InlineData("CI:LHS=={0}", "lhs", true)]
+    [InlineData("CI:LHS!={0}", "lhs", false)]
+    [InlineData("CI:I have LHS in me><{0}", "lhs", true)]
+    [InlineData("CI:I have LHS in me >< {0}", "lhs", true)]
+    public void Evaluate_Then_ResultShouldBeExpectedResult(string condition, string value, bool expectedResult)
     {
-        [Theory]
-        [InlineData("lhs=={0}", "lhs", true)]
-        [InlineData("lhs=={0}", "rhs", false)]
-        [InlineData("lhs == {0}", "lhs", true)]
-        [InlineData("lhs == {0}", "rhs", false)]
-        [InlineData("lhs =={0}", "lhs", true)]
-        [InlineData("lhs =={0}", "rhs", false)]
-        [InlineData("lhs with space =={0}", "lhs with space", true)]
-        [InlineData("lhs with space =={0}", "rhs with space", false)]
-        [InlineData("lhs with space !={0}", "lhs with space", false)]
-        [InlineData("lhs with space     =={0}", "lhs with space    ", true)]
-        [InlineData("CI:LHS=={0}", "lhs", true)]
-        [InlineData("CI:LHS!={0}", "lhs", false)]
-        [InlineData("CI:I have LHS in me><{0}", "lhs", true)]
-        [InlineData("CI:I have LHS in me >< {0}", "lhs", true)]
-        public void Evaluate_Then_ResultShouldBeExpectedResult(string condition, string value, bool expectedResult)
-        {
-            var testee = new ConditionEvaluator(New.Mock<IConditionEvaluatorReporter>());
+        var testee = new ConditionEvaluator(New.Mock<IConditionEvaluatorReporter>());
 
-            var result = testee.Evaluate(condition, Values.From(value, "|"));
+        var result = testee.Evaluate(condition, Values.From(value, "|"));
 
-            result.Should().Be(expectedResult);
-        }
+        result.Should().Be(expectedResult);
     }
 }

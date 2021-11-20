@@ -5,14 +5,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Match
+namespace CommandlineBatcher.Match;
+
+using System;
+
+public interface IMatchReporter
 {
-    using System;
+    void Exception(Exception exception);
 
-    public interface IMatchReporter
-    {
-        void Exception(Exception exception);
-
-        void Report(string message);
-    }
+    void Report(string message);
 }

@@ -5,31 +5,30 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Match
+namespace CommandlineBatcher.Match;
+
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+public class FileOutputter : IOutputter
 {
-    using System;
-    using System.IO;
-    using System.Threading.Tasks;
+    private readonly string outputPath;
 
-    public class FileOutputter : IOutputter
+    public FileOutputter(string outputPath)
     {
-        private readonly string outputPath;
+        this.outputPath = outputPath;
+    }
 
-        public FileOutputter(string outputPath)
+    public Task OutputAsync(string contents)
+    {
+        var directoryPath = Path.GetDirectoryName(Path.GetFullPath(this.outputPath));
+
+        if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
         {
-            this.outputPath = outputPath;
+            Directory.CreateDirectory(directoryPath);
         }
 
-        public Task OutputAsync(string contents)
-        {
-            var directoryPath = Path.GetDirectoryName(Path.GetFullPath(this.outputPath));
-
-            if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-
-            return File.WriteAllTextAsync(this.outputPath, contents + Environment.NewLine);
-        }
+        return File.WriteAllTextAsync(this.outputPath, contents + Environment.NewLine);
     }
 }

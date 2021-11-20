@@ -5,26 +5,25 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Match
+namespace CommandlineBatcher.Match;
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+public class AggregateOutputter : IOutputter
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+    private readonly IReadOnlyList<IOutputter> outputters;
 
-    public class AggregateOutputter : IOutputter
+    public AggregateOutputter(IReadOnlyList<IOutputter> outputters)
     {
-        private readonly IReadOnlyList<IOutputter> outputters;
+        this.outputters = outputters;
+    }
 
-        public AggregateOutputter(IReadOnlyList<IOutputter> outputters)
+    public async Task OutputAsync(string contents)
+    {
+        for (int i = 0; i < this.outputters.Count; i++)
         {
-            this.outputters = outputters;
-        }
-
-        public async Task OutputAsync(string contents)
-        {
-            for (int i = 0; i < this.outputters.Count; i++)
-            {
-                await this.outputters[i].OutputAsync(contents);
-            }
+            await this.outputters[i].OutputAsync(contents);
         }
     }
 }

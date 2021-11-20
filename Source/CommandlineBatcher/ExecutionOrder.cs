@@ -5,11 +5,10 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher
+namespace CommandlineBatcher;
+
+public enum ExecutionOrder
 {
-    public enum ExecutionOrder
-    {
-        Batch,
-        Command,
-    }
+    Batch,
+    Command,
 }

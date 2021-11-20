@@ -5,25 +5,24 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Internal
+namespace CommandlineBatcher.Internal;
+
+using System.IO;
+
+internal class FileSystem : IFileSystem
 {
-    using System.IO;
-
-    internal class FileSystem : IFileSystem
+    public string ReadAllText(string path)
     {
-        public string ReadAllText(string path)
-        {
-            return File.ReadAllText(path);
-        }
+        return File.ReadAllText(path);
+    }
 
-        public bool FileExists(string path)
-        {
-            return File.Exists(path);
-        }
+    public bool FileExists(string path)
+    {
+        return File.Exists(path);
+    }
 
-        public string GetCurrentDirectory()
-        {
-            return Directory.GetCurrentDirectory();
-        }
+    public string GetCurrentDirectory()
+    {
+        return Directory.GetCurrentDirectory();
     }
 }

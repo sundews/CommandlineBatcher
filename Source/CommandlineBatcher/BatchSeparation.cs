@@ -5,16 +5,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher
+namespace CommandlineBatcher;
+
+public enum BatchSeparation
 {
-    public enum BatchSeparation
-    {
-        CommandLine,
-        NewLine,
-        WindowsNewLine,
-        UnixNewLine,
-        Pipe,
-        SemiColon,
-        Comma
-    }
+    CommandLine,
+    NewLine,
+    WindowsNewLine,
+    UnixNewLine,
+    Pipe,
+    SemiColon,
+    Comma
 }

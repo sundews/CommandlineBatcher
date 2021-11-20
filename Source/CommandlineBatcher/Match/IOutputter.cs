@@ -5,12 +5,11 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Match
-{
-    using System.Threading.Tasks;
+namespace CommandlineBatcher.Match;
 
-    public interface IOutputter
-    {
-        Task OutputAsync(string contents);
-    }
+using System.Threading.Tasks;
+
+public interface IOutputter
+{
+    Task OutputAsync(string contents);
 }

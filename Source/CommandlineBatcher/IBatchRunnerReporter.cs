@@ -5,18 +5,17 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher
+namespace CommandlineBatcher;
+
+using CommandlineBatcher.Diagnostics;
+
+public interface IBatchRunnerReporter
 {
-    using CommandlineBatcher.Diagnostics;
+    void Started(IProcess process);
 
-    public interface IBatchRunnerReporter
-    {
-        void Started(IProcess process);
+    void ReportMessage(IProcess process, string line);
 
-        void ReportMessage(IProcess process, string line);
+    void ProcessExited(IProcess process);
 
-        void ProcessExited(IProcess process);
-
-        void FileNotFound(string valuesFile);
-    }
+    void FileNotFound(string valuesFile);
 }

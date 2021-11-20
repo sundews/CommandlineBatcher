@@ -5,12 +5,11 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Diagnostics
-{
-    using System.Diagnostics;
+namespace CommandlineBatcher.Diagnostics;
 
-    public interface IProcessRunner
-    {
-        IProcess? Run(ProcessStartInfo processStartInfo);
-    }
+using System.Diagnostics;
+
+public interface IProcessRunner
+{
+    IProcess? Run(ProcessStartInfo processStartInfo);
 }

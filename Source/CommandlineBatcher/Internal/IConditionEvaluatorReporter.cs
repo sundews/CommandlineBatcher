@@ -5,10 +5,9 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace CommandlineBatcher.Internal
+namespace CommandlineBatcher.Internal;
+
+public interface IConditionEvaluatorReporter
 {
-    public interface IConditionEvaluatorReporter
-    {
-        void Evaluated(string lhs, string @operator, string rhs, bool result);
-    }
+    void Evaluated(string lhs, string @operator, string rhs, bool result);
 }
