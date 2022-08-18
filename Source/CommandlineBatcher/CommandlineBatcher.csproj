@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sundew.Base.Memory" Version="8.1.1" />
+    <PackageReference Include="Sundew.Base.Memory" Version="8.2.0+37f28db0c1" />
     <PackageReference Include="Sundew.CommandLine" Version="9.0.4+2203bd5500" />
     <PackageReference Include="Sundew.Packaging.Publish" Version="8.0.1">
       <PrivateAssets>all</PrivateAssets>
