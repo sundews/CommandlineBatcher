@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sundew.Base.Memory" Version="8.1.1" />
-    <PackageReference Include="Sundew.CommandLine" Version="9.0.4+2203bd5500" />
-    <PackageReference Include="Sundew.Packaging.Publish" Version="8.0.1">
+    <PackageReference Include="Sundew.Base.Memory" Version="8.2.0" />
+    <PackageReference Include="Sundew.CommandLine" Version="9.0.5" />
+    <PackageReference Include="Sundew.Packaging.Publish" Version="8.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
