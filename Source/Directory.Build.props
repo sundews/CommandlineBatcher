@@ -1,5 +1,6 @@
 <Project>
  <PropertyGroup>
+   <SppVersioningMode>AutomaticLatestRevision</SppVersioningMode>
    <Deterministic>true</Deterministic>
    <Version>4.0</Version>
    <OutputPath>bin/$(Configuration)</OutputPath>
@@ -16,5 +17,6 @@
    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
    <WarningsAsErrors />
+   <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
  </PropertyGroup>
 </Project>

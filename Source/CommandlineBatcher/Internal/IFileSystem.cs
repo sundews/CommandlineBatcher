@@ -1,4 +1,6 @@
-﻿namespace CommandlineBatcher.Internal;
+﻿using System.Text;
+
+namespace CommandlineBatcher.Internal;
 
 public interface IFileSystem
 {
@@ -7,4 +9,8 @@ public interface IFileSystem
     bool FileExists(string path);
 
     string GetCurrentDirectory();
+    
+    void AppendAllText(string path, string content, Encoding encoding);
+
+    void WriteAllText(string path, string content, Encoding encoding);
 }

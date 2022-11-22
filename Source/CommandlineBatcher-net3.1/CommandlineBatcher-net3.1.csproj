@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RuntimeVersion>7</RuntimeVersion>
+    <RuntimeVersion>3</RuntimeVersion>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackAsTool>true</PackAsTool>
+    <AssemblyName>CommandlineBatcher</AssemblyName>
     <ToolCommandName>cb</ToolCommandName>
     <Description>Execute batches of multiple commands in a single command line.</Description>
     <Version>$(RuntimeVersion).$(Version)</Version>
@@ -19,5 +20,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\CommandlineBatcher\**\*.cs" />
+    <Compile Remove="..\CommandlineBatcher\obj\**" />
+    <Compile Remove="..\CommandlineBatcher\bin\**" />
   </ItemGroup>
 </Project>
