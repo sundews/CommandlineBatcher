@@ -34,11 +34,10 @@ Help
   -bs      | --batch-separation      | Specifies how batches are separated:                                                              | Default: command-line
                                        [c]ommand-line, [n]ew-line, [w]indows-new-line, [u]nix-new-line, [p]ipe, [s]emi-colon, comma
   -bvs     | --batch-value-separator | The batch value separator                                                                         | Default: ,
-  Batches with values                                                                                                                    | Required
-   -b      | --batches               | The batches to be passed for each command                                                         | Default: [none]
+  -b       | --batches               | The batches to be passed for each command                                                         | Default: [none]
                                        Each batch can contain multiple values separated by the batch value separator
-   -bf     | --batches-files         | A list of files containing batches                                                                | Default: [none]
-   -bsi    | --batches-stdin         | Indicates that batches should be read from standard input
+  -bf      | --batches-files         | A list of files containing batches                                                                | Default: [none]
+  -bsi     | --batches-stdin         | Indicates that batches should be read from standard input
            | --if                    | A condition for each batch to check if it should run                                              | Default: [none]
                                        Format: [StringComparison:]{lhs} {operator} {rhs}
                                        lhs and rhs can be injected by position with {number}

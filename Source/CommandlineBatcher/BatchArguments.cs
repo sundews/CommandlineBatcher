@@ -96,11 +96,13 @@ public class BatchArguments : IArguments
         argumentsBuilder.AddOptionalEnum("bs", "batch-separation", () => this.BatchSeparation, s => this.BatchSeparation = s, @"Specifies how batches are separated:
 {0}");
         argumentsBuilder.AddOptional("bvs", "batch-value-separator", () => this.BatchValueSeparator, s => this.BatchValueSeparator = s, "The batch value separator");
-        argumentsBuilder.RequireAnyOf("Batches with values", x => x
-            .AddList("b", "batches", this.batches!, this.SerializeBatch, this.DeserializeBatch, @$"The batches to be passed for each command
-Each batch can contain multiple values separated by the batch value separator", true)
-            .AddList("bf", "batches-files", this.batchesFiles!, "A list of files containing batches", true)
-            .AddSwitch("bsi", "batches-stdin", this.BatchesFromStandardInput, b => this.BatchesFromStandardInput = b, "Indicates that batches should be read from standard input"));
+        argumentsBuilder.AddOptionalList("b", "batches", this.batches!, this.SerializeBatch, this.DeserializeBatch,
+            @$"The batches to be passed for each command
+Each batch can contain multiple values separated by the batch value separator", true);
+        argumentsBuilder.AddOptionalList("bf", "batches-files", this.batchesFiles!,
+            "A list of files containing batches", true);
+        argumentsBuilder.AddSwitch("bsi", "batches-stdin", this.BatchesFromStandardInput,
+            b => this.BatchesFromStandardInput = b, "Indicates that batches should be read from standard input");
         argumentsBuilder.AddOptional(null, "if", () => this.Condition, c => this.Condition = c, @$"A condition for each batch to check if it should run
 Format: [StringComparison:]{{lhs}} {{operator}} {{rhs}}
 lhs and rhs can be injected by position with {{number}}

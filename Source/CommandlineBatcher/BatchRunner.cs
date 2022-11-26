@@ -13,12 +13,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommandlineBatcher.Diagnostics;
 using CommandlineBatcher.Internal;
+using Sundew.Base.Collections;
 using Sundew.Base.Text;
 using Sundew.CommandLine.Extensions;
 
@@ -32,6 +32,7 @@ public class BatchRunner
     private const string NoPathSpecified = "No path specified";
     private const string UnknownNames = "The following name(s) where not found: ";
     private const string IndicesContainedNullValues = "The following indices contained null values: ";
+    private const string EmptyBatchValue = "-";
     private static readonly NamedValues NamedValues = NamedValues.Create(("DQ", "\""), ("NL", Environment.NewLine));
     private readonly IProcessRunner processRunner;
     private readonly IFileSystem fileSystem;
@@ -76,6 +77,11 @@ public class BatchRunner
             {
                 batches.Add(Values.From(batch, batchArguments.BatchValueSeparator));
             }
+        }
+
+        if (batches.IsEmpty())
+        {
+            batches.Add(new Values(EmptyBatchValue));
         }
 
         batches = batches.Where(x => this.conditionEvaluator.Evaluate(batchArguments.Condition, x)).ToList();
