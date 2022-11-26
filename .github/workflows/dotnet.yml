@@ -34,7 +34,7 @@ jobs:
     - name: Build setup
       id: build-setup
       run: >
-        dotnet tool update Sundew.Packaging.Tool -g --version 8.1.0-u20221126-044125-ci
+        dotnet tool update Sundew.Packaging.Tool -g --version 8.1.0-u20221126-052247-ci
 
         dotnet tool update CommandlineBatcher -g --version 4.*
 
