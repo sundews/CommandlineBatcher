@@ -222,8 +222,8 @@ public class BatchRunner
         var result = NamedFormatString.Format(CultureInfo.CurrentCulture, logFormat, NamedValues, arguments);
         return result switch
         {
-            StringFormatted stringFormatted => (stringFormatted.Value, true),
-            UnexpectedNames unexpectedNames => (unexpectedNames.Names.JoinToStringBuilder(new StringBuilder(UnknownNames), (builder, name) => builder.Append(name), separator).ToString(), false),
+            StringFormatted stringFormatted => (stringFormatted.Result, true),
+            FormatContainedUnknownNames formatContainedUnknownNames => (formatContainedUnknownNames.Names.JoinToStringBuilder(new StringBuilder(UnknownNames), (builder, name) => builder.Append(name), separator).ToString(), false),
             ArgumentsContainedNullValues argumentsContainedNullValues => (argumentsContainedNullValues.NullArguments.JoinToStringBuilder(new StringBuilder(IndicesContainedNullValues), (builder, namedIndex) => builder.Append($"{namedIndex.Name}({namedIndex.Index})"), separator).ToString(), false),
         };
     }
