@@ -9,6 +9,7 @@ namespace CommandlineBatcher.Match;
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Sundew.CommandLine;
 
 public class MatchVerb : IVerb
@@ -31,7 +32,8 @@ public class MatchVerb : IVerb
         string? mergeFormat = null,
         string? outputPath = null,
         bool skipConsoleOutput = false,
-        string? workingDirectory = null)
+        string? workingDirectory = null,
+        string? fileEncoding = null)
     {
         this.patterns = patterns;
         this.BatchSeparator = batchSeparator ?? '|';
@@ -44,6 +46,7 @@ public class MatchVerb : IVerb
         this.SkipConsoleOutput = skipConsoleOutput;
         this.MergeFormat = mergeFormat;
         this.WorkingDirectory = workingDirectory ?? Directory.GetCurrentDirectory();
+        this.FileEncoding = fileEncoding ?? Encoding.Default.BodyName;
     }
 
     public IReadOnlyList<string> Patterns => this.patterns;
@@ -69,6 +72,8 @@ public class MatchVerb : IVerb
     public Verbosity Verbosity { get; private set; }
 
     public bool SkipConsoleOutput { get; private set; }
+
+    public string? FileEncoding { get; private set; }
 
     public IVerb? NextVerb { get; } = null;
 
@@ -97,5 +102,6 @@ the format to be used for merging");
         argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
         argumentsBuilder.AddOptionalValue("output-path", () => this.OutputPath, s => this.OutputPath = s, "The output path, if not specified application will output to stdout");
         argumentsBuilder.AddOptional("wd", "working-directory", () => this.WorkingDirectory, s => this.WorkingDirectory = s, "The working directory", true, defaultValueText: "Current directory");
+        argumentsBuilder.AddOptional("fe", "file-encoding", () => this.FileEncoding, s => this.FileEncoding = s, @$"The name of the encoding e.g. utf-8, utf-16/unicode.");
     }
 }

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using Sundew.Base.Primitives.Numeric;
 using Sundew.Base.Text;
 using Sundew.CommandLine;
@@ -18,7 +19,6 @@ using Sundew.CommandLine;
 public class BatchArguments : IArguments
 {
     private const string All = "All";
-    private const string Unicode = "unicode";
     private readonly List<Command> commands;
     private readonly List<Values>? batches;
     private readonly List<string>? batchesFiles;
@@ -51,7 +51,7 @@ public class BatchArguments : IArguments
         this.Parallelize = parallelize;
         this.ExecutionOrder = executionOrder;
         this.Verbosity = verbosity;
-        this.FileEncoding = fileEncoding ?? Unicode;
+        this.FileEncoding = fileEncoding ?? Encoding.Default.BodyName;
         this.FileEncoding = outputFilePath;
     }
 

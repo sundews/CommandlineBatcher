@@ -19,13 +19,18 @@ Help
      -md   | --merge-delimiter       | Specifies the delimiter used between values when merging                                          | Default: [none]
      -m    | --merge-format          | Indicates whether batches should be merged and specifies                                          | Default: [none]
                                        the format to be used for merging
+     -nso  | --skip-stdout-output    | Determines whether outputting to stdout should be skipped.
      -lv   | --logging-verbosity     | Logging verbosity: [n]ormal, [e]rrors, [q]uiet, [d]etailed                                        | Default: normal
+     -wd   | --working-directory     | The working directory                                                                             | Default: Current directory
+     -fe   | --file-encoding         | The name of the encoding e.g. utf-8, utf-16/unicode.                                              | Default: utf-8
      <output-path>                   | The output path, if not specified application will output to stdout                               | Default: [none]
  Arguments:                          Executes the specified sequence of commands per batch
   -c       | --commands              | The commands to be executed                                                                       | Required
                                        Format: "[{command}][|{arguments}]"...
                                        Values can be injected by position with {number}
                                        If no command is specified, the argument is sent to standard output
+                                       Use command ">> {file path}" to append to file
+                                       Use command "> {file path}" to write to file
   -bs      | --batch-separation      | Specifies how batches are separated:                                                              | Default: command-line
                                        [c]ommand-line, [n]ew-line, [w]indows-new-line, [u]nix-new-line, [p]ipe, [s]emi-colon, comma
   -bvs     | --batch-value-separator | The batch value separator                                                                         | Default: ,
@@ -46,10 +51,12 @@ Help
                                        or the first [c]ommand is executed for all batches before moving to the next command
                                        - Finish first [b]atch first
                                        - Finish first [c]ommand first
-  -mp      | --max-parallelism       | The degree of parallel execution (1-8)                                                            | Default: 1
+  -mp      | --max-parallelism       | The degree of parallel execution (1-20)                                                           | Default: 1
                                        Specify "all" for number of cores.
   -p       | --parallelize           | Specifies whether commands or batches run in parallel: [c]ommands, [b]atches                      | Default: commands
   -lv      | --logging-verbosity     | Logging verbosity: [n]ormal, [e]rrors, [q]uiet, [d]etailed                                        | Default: normal
+  -fe      | --file-encoding         | The name of the encoding e.g. utf-8, utf-16/unicode.                                              | Default: [none]
+  -o       | --output-file           | The file path output redirect commands that do not specify a file path to.                        | Default: [none]
 ```
 
 ## Samples

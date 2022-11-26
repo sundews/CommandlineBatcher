@@ -9,15 +9,18 @@ namespace CommandlineBatcher.Match;
 
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 public class FileOutputter : IOutputter
 {
     private readonly string outputPath;
+    private readonly Encoding encoding;
 
-    public FileOutputter(string outputPath)
+    public FileOutputter(string outputPath, Encoding encoding)
     {
         this.outputPath = outputPath;
+        this.encoding = encoding;
     }
 
     public Task OutputAsync(string contents)
@@ -29,6 +32,6 @@ public class FileOutputter : IOutputter
             Directory.CreateDirectory(directoryPath);
         }
 
-        return File.WriteAllTextAsync(this.outputPath, contents + Environment.NewLine);
+        return File.WriteAllTextAsync(this.outputPath, contents + Environment.NewLine, this.encoding);
     }
 }

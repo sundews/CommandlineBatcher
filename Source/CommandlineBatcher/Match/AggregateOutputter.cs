@@ -8,6 +8,7 @@
 namespace CommandlineBatcher.Match;
 
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 public class AggregateOutputter : IOutputter

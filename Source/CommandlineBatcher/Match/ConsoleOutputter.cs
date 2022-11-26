@@ -8,6 +8,7 @@
 namespace CommandlineBatcher.Match;
 
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 public class ConsoleOutputter : IOutputter

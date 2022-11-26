@@ -137,7 +137,7 @@ public class BatchRunner
             var (content, isValid) = Format(command.Arguments, values.Arguments);
             if (isValid)
             {
-                this.fileSystem.AppendAllText(path, content, GetEncoding(batchArguments.FileEncoding));
+                this.fileSystem.AppendAllText(path, content, EncodingHelper.GetEncoding(batchArguments.FileEncoding));
             }
             else
             {
@@ -150,7 +150,7 @@ public class BatchRunner
         if (command.Executable.StartsWith(RedirectToFile))
         {
             var path = GetFilePath(command.Executable.AsSpan(1), batchArguments);
-            this.fileSystem.WriteAllText(path, string.Format(command.Arguments, values.Arguments), GetEncoding(batchArguments.FileEncoding));
+            this.fileSystem.WriteAllText(path, string.Format(command.Arguments, values.Arguments), EncodingHelper.GetEncoding(batchArguments.FileEncoding));
             return;
         }
 
@@ -207,22 +207,7 @@ public class BatchRunner
 
         return path;
     }
-
-    private Encoding GetEncoding(string? encodingName)
-    {
-        var encoding = encodingName?.ToLower() switch
-        {
-            "utf8" => Encoding.UTF8,
-            "utf16" => Encoding.Unicode,
-            "unicode" => Encoding.Unicode,
-            Strings.Empty => Encoding.Default,
-            null => Encoding.Default,
-            _ => Encoding.GetEncoding(encodingName),
-        };
-
-        return encoding;
-    }
-
+    
     internal static (string Log, bool IsValid) Format(
         string logFormat,
         string?[] arguments)
