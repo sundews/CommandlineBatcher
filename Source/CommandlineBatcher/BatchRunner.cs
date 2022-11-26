@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -132,12 +133,7 @@ public class BatchRunner
 
         if (command.Executable.StartsWith(RedirectToFileAppend))
         {
-            var path = command.Executable.Substring(2).Trim();
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new InvalidOperationException(NoPathSpecified);
-            }
-
+            var path = GetFilePath(command.Executable.AsSpan(2), batchArguments);
             var (content, isValid) = Format(command.Arguments, values.Arguments);
             if (isValid)
             {
@@ -153,12 +149,7 @@ public class BatchRunner
 
         if (command.Executable.StartsWith(RedirectToFile))
         {
-            var path = command.Executable.Substring(1).Trim();
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new InvalidOperationException(NoPathSpecified);
-            }
-
+            var path = GetFilePath(command.Executable.AsSpan(1), batchArguments);
             this.fileSystem.WriteAllText(path, string.Format(command.Arguments, values.Arguments), GetEncoding(batchArguments.FileEncoding));
             return;
         }
@@ -200,6 +191,21 @@ public class BatchRunner
 
             throw;
         }
+    }
+
+    private string GetFilePath(ReadOnlySpan<char> command, BatchArguments batchArguments)
+    {
+        var path = command.Trim().ToString();
+        if (string.IsNullOrEmpty(path))
+        {
+            path = batchArguments.OutputFilePath;
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new InvalidOperationException(NoPathSpecified);
+            }
+        }
+
+        return path;
     }
 
     private Encoding GetEncoding(string? encodingName)

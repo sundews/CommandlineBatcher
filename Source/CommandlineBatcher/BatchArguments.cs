@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using Sundew.Base.Primitives.Numeric;
 using Sundew.Base.Text;
 using Sundew.CommandLine;
@@ -19,6 +18,7 @@ using Sundew.CommandLine;
 public class BatchArguments : IArguments
 {
     private const string All = "All";
+    private const string Unicode = "unicode";
     private readonly List<Command> commands;
     private readonly List<Values>? batches;
     private readonly List<string>? batchesFiles;
@@ -36,7 +36,8 @@ public class BatchArguments : IArguments
         int maxDegreeOfParallelism = 1,
         Parallelize parallelize = Parallelize.Commands,
         Verbosity verbosity = default,
-        string? fileEncoding = default)
+        string? fileEncoding = default,
+        string? outputFilePath = default)
     {
         this.commands = commands;
         this.batches = batches;
@@ -50,7 +51,8 @@ public class BatchArguments : IArguments
         this.Parallelize = parallelize;
         this.ExecutionOrder = executionOrder;
         this.Verbosity = verbosity;
-        this.FileEncoding = fileEncoding ?? "unicode";
+        this.FileEncoding = fileEncoding ?? Unicode;
+        this.FileEncoding = outputFilePath;
     }
 
     public BatchArguments()
@@ -81,8 +83,10 @@ public class BatchArguments : IArguments
     public ExecutionOrder ExecutionOrder { get; private set; }
 
     public Verbosity Verbosity { get; private set; }
-    
+
     public string? FileEncoding { get; private set; }
+
+    public string? OutputFilePath { get; private set; }
     
     public string HelpText { get; } = "Executes the specified sequence of commands per batch";
         
@@ -113,6 +117,7 @@ or the first {{2}} is executed for all batches before moving to the next command
         argumentsBuilder.AddOptionalEnum("p", "parallelize", () => this.Parallelize, v => this.Parallelize = v, "Specifies whether commands or batches run in parallel: {0}");
         argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
         argumentsBuilder.AddOptional("fe", "file-encoding", () => this.FileEncoding, s => this.FileEncoding = s, @$"The name of the encoding e.g. utf-8, utf-16/unicode.");
+        argumentsBuilder.AddOptional("o", "output-file", () => this.OutputFilePath, s => this.OutputFilePath = s, @$"The file path output redirect commands that do not specify a file path to.");
     }
 
     private Command DeserializeCommand(string commandWithArguments, CultureInfo arg2)

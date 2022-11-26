@@ -34,7 +34,7 @@ jobs:
     - name: Build setup
       id: build-setup
       run: >
-        dotnet tool update Sundew.Packaging.Tool -g --version 8.*
+        dotnet tool update Sundew.Packaging.Tool -g --version 8.1.0-u20221126-044125-ci
 
         dotnet tool update CommandlineBatcher -g --version 4.*
 
@@ -62,7 +62,7 @@ jobs:
       run: >
         dotnet build ${{ env.solutionPath }} --verbosity normal --configuration ${{ steps.stage-build.outputs.buildConfiguration }} --no-restore
         -p:"ContinuousIntegrationBuild=true"
-        -p:"SppForceVersion=${{ steps.stage-build.outputs.fullVersion }}"
+        -p:"GlobalVersion=${{ steps.stage-build.outputs.fullVersion }}"
         '-p:"SppAppendPublishFileLogFormats={PackageId},{DQ}{PackagePath}{DQ}{NL} > ${{ env.packages-to-push }}"'
         -p:GeneratePackageOnBuild=true
         -p:"PackageOutputPath=${{ steps.stage-build.outputs.nuGetPackagesPath }}"
