@@ -53,7 +53,7 @@ jobs:
         --force-version '"${{ secrets.SPP_FORCE_VERSION_IF_SET }}"'
         --output-formats "Stage info {Stage}, {FullVersion}, {Configuration}" "::set-output name=stage::{Stage}" "::set-output name=version::{Version}" "::set-output name=buildConfiguration::{Configuration}" 
         "::set-output name=nuGetPackagesPath::{WorkingDirectory}/NuGet" "::set-output name=dev-package-source-if-set::{DevFeedSource}" "::set-output name=feedSource::{FeedSource}" 
-        "::set-output name=pushSource::{PushSource}" "::set-output name=apiKey::{ApiKey}" "::set-output name=fullVersion::{FullVersion}" "::set-output name=symbolsPushSource::{SymbolsPushSource}"
+        "::set-output name=pushSource::{PushSource}" "::set-output name=apiKey::{ApiKey}" "::set-output name=globalVersion::{VersionMinor}.{VersionPatch}.{VersionRevision}-{VersionRelease}" "::set-output name=symbolsPushSource::{SymbolsPushSource}"
         "::set-output name=symbolsApiKey::{SymbolsApiKey}"
     - name: Restore
       run: dotnet restore ${{ env.solutionPath }} --verbosity normal -s ${{ env.source }}${{ steps.stage-build.outputs.dev-package-source-if-set }}
@@ -62,7 +62,7 @@ jobs:
       run: >
         dotnet build ${{ env.solutionPath }} --verbosity normal --configuration ${{ steps.stage-build.outputs.buildConfiguration }} --no-restore
         -p:"ContinuousIntegrationBuild=true"
-        -p:"GlobalVersion=${{ steps.stage-build.outputs.fullVersion }}"
+        -p:"GlobalVersion=${{ steps.stage-build.outputs.globalVersion }}"
         '-p:"SppAppendPublishFileLogFormats={PackageId},{DQ}{PackagePath}{DQ}{NL} > ${{ env.packages-to-push }}"'
         -p:GeneratePackageOnBuild=true
         -p:"PackageOutputPath=${{ steps.stage-build.outputs.nuGetPackagesPath }}"

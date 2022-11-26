@@ -8,6 +8,7 @@
     <AssemblyName>CommandlineBatcher</AssemblyName>
     <ToolCommandName>cb</ToolCommandName>
     <Description>Execute batches of multiple commands in a single command line.</Description>
+    <Version>$(RuntimeVersion).$(Version)</Version>
     <SppForceVersion>$(RuntimeVersion).$(GlobalVersion)</SppForceVersion>
   </PropertyGroup>
 
