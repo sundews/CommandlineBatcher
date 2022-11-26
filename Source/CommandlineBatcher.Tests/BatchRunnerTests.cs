@@ -78,8 +78,8 @@ public class BatchRunnerTests
                 fileEncoding: "utf8"));
 
         const string ExpectedFile = "file.txt";
-        this.fileSystem.Verify(x => x.AppendAllText(ExpectedFile, $"Version=1.0.1, Package=Sundew.CommandLine \"Package=Sundew.CommandLine Version=1.0.1\"{Strings.NewLine}", Encoding.UTF8), Times.Once);
-        this.fileSystem.Verify(x => x.AppendAllText(ExpectedFile, $"Version=2.0.1, Package=Sundew.Base \"Package=Sundew.Base Version=2.0.1\"{Strings.NewLine}", Encoding.UTF8), Times.Once);
+        this.fileSystem.Verify(x => x.AppendAllText(ExpectedFile, $"Version=1.0.1, Package=Sundew.CommandLine \"Package=Sundew.CommandLine Version=1.0.1\"{Strings.NewLine}", It.Is<Encoding>(value => value.BodyName == Encoding.UTF8.BodyName)), Times.Once);
+        this.fileSystem.Verify(x => x.AppendAllText(ExpectedFile, $"Version=2.0.1, Package=Sundew.Base \"Package=Sundew.Base Version=2.0.1\"{Strings.NewLine}", It.Is<Encoding>(value => value.BodyName == Encoding.UTF8.BodyName)), Times.Once);
     }
 
     [Fact]
