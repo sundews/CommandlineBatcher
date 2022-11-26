@@ -100,8 +100,8 @@ Batches can also contain regex group names in the format {group-name}", true);
 the format to be used for merging");
         argumentsBuilder.AddSwitch("nso", "skip-stdout-output", this.SkipConsoleOutput, b => this.SkipConsoleOutput = b, "Determines whether outputting to stdout should be skipped.");
         argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
-        argumentsBuilder.AddOptionalValue("output-path", () => this.OutputPath, s => this.OutputPath = s, "The output path, if not specified application will output to stdout");
         argumentsBuilder.AddOptional("wd", "working-directory", () => this.WorkingDirectory, s => this.WorkingDirectory = s, "The working directory", true, defaultValueText: "Current directory");
         argumentsBuilder.AddOptional("fe", "file-encoding", () => this.FileEncoding, s => this.FileEncoding = s, @$"The name of the encoding e.g. utf-8, utf-16/unicode.");
+        argumentsBuilder.AddOptionalValue("output-path", () => this.OutputPath, s => this.OutputPath = s, "The output path, if not specified application will output to stdout");
     }
 }

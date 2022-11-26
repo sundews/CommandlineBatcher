@@ -119,7 +119,7 @@ or the first {{2}} is executed for all batches before moving to the next command
         argumentsBuilder.AddOptionalEnum("p", "parallelize", () => this.Parallelize, v => this.Parallelize = v, "Specifies whether commands or batches run in parallel: {0}");
         argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
         argumentsBuilder.AddOptional("fe", "file-encoding", () => this.FileEncoding, s => this.FileEncoding = s, @$"The name of the encoding e.g. utf-8, utf-16/unicode.");
-        argumentsBuilder.AddOptional("o", "output-file", () => this.OutputFilePath, s => this.OutputFilePath = s, @$"The file path output redirect commands that do not specify a file path to.");
+        argumentsBuilder.AddOptionalValue("output-path", () => this.OutputFilePath, s => this.OutputFilePath = s, @$"The file path to redirect output for commands that do not specify a file path or a program to run.");
     }
 
     private Command DeserializeCommand(string commandWithArguments, CultureInfo arg2)
