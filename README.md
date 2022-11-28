@@ -2,6 +2,15 @@
 
 Execute batches of multiple commands in a single command line.
 
+## Versioning
+CommandlineBatcher uses semantic versioning in an alternative way by using the format: {Runtime}.{Major}.{Minor}.{Patch}.
+This allows users of the tool to install a version matching a specific runtime.
+E.g. the following command installs CommandlineBatcher major version 4, for .NET 7.0.
+```
+dotnet tool update CommandlineBatcher -g --version 7.4.*
+```
+.NET 3.1 (3) and NET 6.0 (6) are also supported.
+
 ```
 Help
  Verbs:
