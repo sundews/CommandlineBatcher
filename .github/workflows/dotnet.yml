@@ -57,9 +57,9 @@ jobs:
         --prerelease-format "u{DateTime}-{Stage}-{Postfix}"
         --metadata ${{ steps.build-setup.outputs.git-hash }}
         --force-version '"${{ secrets.SPP_FORCE_VERSION_IF_SET }}"'
-        --output-formats "Stage info {Stage}, {FullVersion}, {Configuration}" "::set-output name=stage::{Stage}" "::set-output name=version::{Version}" "::set-output name=buildConfiguration::{Configuration}" 
-        "::set-output name=nuGetPackagesPath::{WorkingDirectory}/NuGet" "::set-output name=dev-package-source-if-set::{DevFeedSource}" "::set-output name=feedSource::{FeedSource}" 
-        "::set-output name=pushSource::{PushSource}" "::set-output name=apiKey::{ApiKey}" "::set-output name=globalVersion::{VersionMinor}.{VersionPatch}.{VersionRevision}-{VersionRelease}" "::set-output name=symbolsPushSource::{SymbolsPushSource}"
+        --output-formats "Selected Stage: {Stage}, {FullVersion}, {Configuration}" "::set-output name=stage::{Stage}" "::set-output name=version::{Version}" "::set-output name=buildConfiguration::{Configuration}"
+        "::set-output name=nuGetPackagesPath::{WorkingDirectory}/NuGet" "::set-output name=dev-package-source-if-set::{DevFeedSource}" "::set-output name=feedSource::{FeedSource}"
+        "::set-output name=pushSource::{PushSource}" "::set-output name=apiKey::{ApiKey}" "::set-output name=globalVersion::{VersionMinor}.{VersionPatch}.{VersionRevision}"::set-output name=globalVersionRelease::{VersionRelease}" "::set-output name=symbolsPushSource::{SymbolsPushSource}"
         "::set-output name=symbolsApiKey::{SymbolsApiKey}"
 
         cb match -p "^refs/tags/release[^/]*$ => ::set-output name=isReleaseCommand::true" -i "${{ github.ref }}"
@@ -71,6 +71,7 @@ jobs:
         dotnet build ${{ env.solutionPath }} --verbosity normal --configuration ${{ steps.stage-build.outputs.buildConfiguration }} --no-restore
         -p:"ContinuousIntegrationBuild=true"
         -p:"GlobalVersion=${{ steps.stage-build.outputs.globalVersion }}"
+        -p:"GlobalVersionRelase=${{ steps.stage-build.outputs.globalVersionRelease }}"
         '-p:"SppAppendPublishFileLogFormats={PackageId}={DQ}{PackagePath}{DQ}={Version}{NL} > ${{ env.packages-to-push }}"'
         -p:GeneratePackageOnBuild=true
         -p:"PackageOutputPath=${{ steps.stage-build.outputs.nuGetPackagesPath }}"
