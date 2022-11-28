@@ -67,7 +67,7 @@ jobs:
         dotnet build ${{ env.solutionPath }} --verbosity normal --configuration ${{ steps.stage-build.outputs.buildConfiguration }} --no-restore
         -p:"ContinuousIntegrationBuild=true"
         -p:"GlobalVersion=${{ steps.stage-build.outputs.globalVersion }}"
-        -p:"GlobalVersionRelase=${{ steps.stage-build.outputs.globalVersionRelease }}"
+        -p:"GlobalVersionRelease=${{ steps.stage-build.outputs.globalVersionRelease }}"
         '-p:"SppAppendPublishFileLogFormats={PackageId}={DQ}{PackagePath}{DQ}={Version}{NL} > ${{ env.packages-to-push }}"'
         -p:GeneratePackageOnBuild=true
         -p:"PackageOutputPath=${{ steps.stage-build.outputs.nuGetPackagesPath }}"
