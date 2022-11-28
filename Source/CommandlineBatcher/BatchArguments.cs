@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using Sundew.Base.Primitives.Numeric;
 using Sundew.Base.Text;
 using Sundew.CommandLine;
@@ -34,7 +35,9 @@ public class BatchArguments : IArguments
         ExecutionOrder executionOrder = ExecutionOrder.Batch,
         int maxDegreeOfParallelism = 1,
         Parallelize parallelize = Parallelize.Commands,
-        Verbosity verbosity = default)
+        Verbosity verbosity = default,
+        string? fileEncoding = default,
+        string? outputFilePath = default)
     {
         this.commands = commands;
         this.batches = batches;
@@ -48,10 +51,12 @@ public class BatchArguments : IArguments
         this.Parallelize = parallelize;
         this.ExecutionOrder = executionOrder;
         this.Verbosity = verbosity;
+        this.FileEncoding = fileEncoding ?? Encoding.Default.BodyName;
+        this.FileEncoding = outputFilePath;
     }
 
     public BatchArguments()
-        : this(new List<Command>(), BatchSeparation.CommandLine, null, new List<Values>(), new List<string>(), false, null)
+        : this(new List<Command>(), BatchSeparation.CommandLine, null, new List<Values>(), new List<string>())
     {
     }
 
@@ -79,19 +84,25 @@ public class BatchArguments : IArguments
 
     public Verbosity Verbosity { get; private set; }
 
+    public string? FileEncoding { get; private set; }
+
+    public string? OutputFilePath { get; private set; }
+    
     public string HelpText { get; } = "Executes the specified sequence of commands per batch";
         
     public void Configure(IArgumentsBuilder argumentsBuilder)
     {
-        argumentsBuilder.AddRequiredList("c", "commands", this.commands, this.SerializeCommand, this.DeserializeCommand, @$"The commands to be executed{Environment.NewLine}Format: ""[{{command}}][|{{arguments}}]""...{Environment.NewLine}Values can be injected by position with {{number}}{Environment.NewLine}If no command is specified, the argument is sent to standard output", true);
+        argumentsBuilder.AddRequiredList("c", "commands", this.commands, this.SerializeCommand, this.DeserializeCommand, @$"The commands to be executed{Environment.NewLine}Format: ""[{{command}}][|{{arguments}}]""...{Environment.NewLine}Values can be injected by position with {{number}}{Environment.NewLine}If no command is specified, the argument is sent to standard output{Environment.NewLine}Use command "">> {{file path}}"" to append to file{Environment.NewLine}Use command ""> {{file path}}"" to write to file", true);
         argumentsBuilder.AddOptionalEnum("bs", "batch-separation", () => this.BatchSeparation, s => this.BatchSeparation = s, @"Specifies how batches are separated:
 {0}");
         argumentsBuilder.AddOptional("bvs", "batch-value-separator", () => this.BatchValueSeparator, s => this.BatchValueSeparator = s, "The batch value separator");
-        argumentsBuilder.RequireAnyOf("Batches with values", x => x
-            .AddList("b", "batches", this.batches!, this.SerializeBatch, this.DeserializeBatch, @$"The batches to be passed for each command
-Each batch can contain multiple values separated by the batch value separator", true)
-            .AddList("bf", "batches-files", this.batchesFiles!, "A list of files containing batches", true)
-            .AddSwitch("bsi", "batches-stdin", this.BatchesFromStandardInput, b => this.BatchesFromStandardInput = b, "Indicates that batches should be read from standard input"));
+        argumentsBuilder.AddOptionalList("b", "batches", this.batches!, this.SerializeBatch, this.DeserializeBatch,
+            @$"The batches to be passed for each command
+Each batch can contain multiple values separated by the batch value separator", true);
+        argumentsBuilder.AddOptionalList("bf", "batches-files", this.batchesFiles!,
+            "A list of files containing batches", true);
+        argumentsBuilder.AddSwitch("bsi", "batches-stdin", this.BatchesFromStandardInput,
+            b => this.BatchesFromStandardInput = b, "Indicates that batches should be read from standard input");
         argumentsBuilder.AddOptional(null, "if", () => this.Condition, c => this.Condition = c, @$"A condition for each batch to check if it should run
 Format: [StringComparison:]{{lhs}} {{operator}} {{rhs}}
 lhs and rhs can be injected by position with {{number}}
@@ -107,6 +118,8 @@ or the first {{2}} is executed for all batches before moving to the next command
         argumentsBuilder.AddOptional("mp", "max-parallelism", () => this.MaxDegreeOfParallelism.ToString(), this.DeserializeMaxParallelism, @$"The degree of parallel execution (1-{Environment.ProcessorCount}){Environment.NewLine}Specify ""all"" for number of cores.");
         argumentsBuilder.AddOptionalEnum("p", "parallelize", () => this.Parallelize, v => this.Parallelize = v, "Specifies whether commands or batches run in parallel: {0}");
         argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
+        argumentsBuilder.AddOptional("fe", "file-encoding", () => this.FileEncoding, s => this.FileEncoding = s, @$"The name of the encoding e.g. utf-8, utf-16/unicode.");
+        argumentsBuilder.AddOptionalValue("output-path", () => this.OutputFilePath, s => this.OutputFilePath = s, @$"The file path to redirect output for commands that do not specify a file path or a program to run.");
     }
 
     private Command DeserializeCommand(string commandWithArguments, CultureInfo arg2)

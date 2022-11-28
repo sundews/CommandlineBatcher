@@ -12,10 +12,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CommandlineBatcher.Diagnostics;
 using CommandlineBatcher.Internal;
+using Sundew.Base.Collections;
 using Sundew.Base.Text;
 using Sundew.CommandLine.Extensions;
 
@@ -24,6 +27,13 @@ public class BatchRunner
     private const string PipeSeparator = "|";
     private const string SemiColonSeparator = ";";
     private const string CommaSeparator = ",";
+    private const string RedirectToFileAppend = ">>";
+    private const string RedirectToFile = ">";
+    private const string NoPathSpecified = "No path specified";
+    private const string UnknownNames = "The following name(s) where not found: ";
+    private const string IndicesContainedNullValues = "The following indices contained null values: ";
+    private const string EmptyBatchValue = "-";
+    private static readonly NamedValues NamedValues = NamedValues.Create(("DQ", "\""), ("NL", Environment.NewLine));
     private readonly IProcessRunner processRunner;
     private readonly IFileSystem fileSystem;
     private readonly ConditionEvaluator conditionEvaluator;
@@ -67,6 +77,11 @@ public class BatchRunner
             {
                 batches.Add(Values.From(batch, batchArguments.BatchValueSeparator));
             }
+        }
+
+        if (batches.IsEmpty())
+        {
+            batches.Add(new Values(EmptyBatchValue));
         }
 
         batches = batches.Where(x => this.conditionEvaluator.Evaluate(batchArguments.Condition, x)).ToList();
@@ -122,6 +137,29 @@ public class BatchRunner
             return;
         }
 
+        if (command.Executable.StartsWith(RedirectToFileAppend))
+        {
+            var path = GetFilePath(command.Executable.AsSpan(2), batchArguments);
+            var (content, isValid) = Format(command.Arguments, values.Arguments);
+            if (isValid)
+            {
+                this.fileSystem.AppendAllText(path, content, EncodingHelper.GetEncoding(batchArguments.FileEncoding));
+            }
+            else
+            {
+                throw new InvalidOperationException(content);
+            }
+
+            return;
+        }
+
+        if (command.Executable.StartsWith(RedirectToFile))
+        {
+            var path = GetFilePath(command.Executable.AsSpan(1), batchArguments);
+            this.fileSystem.WriteAllText(path, string.Format(command.Arguments, values.Arguments), EncodingHelper.GetEncoding(batchArguments.FileEncoding));
+            return;
+        }
+
         try
         {
             var processStartInfo =
@@ -159,5 +197,34 @@ public class BatchRunner
 
             throw;
         }
+    }
+
+    private string GetFilePath(ReadOnlySpan<char> command, BatchArguments batchArguments)
+    {
+        var path = command.Trim().ToString();
+        if (string.IsNullOrEmpty(path))
+        {
+            path = batchArguments.OutputFilePath;
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new InvalidOperationException(NoPathSpecified);
+            }
+        }
+
+        return path;
+    }
+    
+    internal static (string Log, bool IsValid) Format(
+        string logFormat,
+        string?[] arguments)
+    {
+        const string separator = ", ";
+        var result = NamedFormatString.Format(CultureInfo.CurrentCulture, logFormat, NamedValues, arguments);
+        return result switch
+        {
+            StringFormatted stringFormatted => (stringFormatted.Result, true),
+            FormatContainedUnknownNames formatContainedUnknownNames => (formatContainedUnknownNames.Names.JoinToStringBuilder(new StringBuilder(UnknownNames), (builder, name) => builder.Append(name), separator).ToString(), false),
+            ArgumentsContainedNullValues argumentsContainedNullValues => (argumentsContainedNullValues.NullArguments.JoinToStringBuilder(new StringBuilder(IndicesContainedNullValues), (builder, namedIndex) => builder.Append($"{namedIndex.Name}({namedIndex.Index})"), separator).ToString(), false),
+        };
     }
 }

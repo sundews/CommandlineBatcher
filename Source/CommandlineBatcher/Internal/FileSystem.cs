@@ -8,6 +8,7 @@
 namespace CommandlineBatcher.Internal;
 
 using System.IO;
+using System.Text;
 
 internal class FileSystem : IFileSystem
 {
@@ -24,5 +25,15 @@ internal class FileSystem : IFileSystem
     public string GetCurrentDirectory()
     {
         return Directory.GetCurrentDirectory();
+    }
+
+    public void AppendAllText(string path, string content, Encoding encoding)
+    {
+        File.AppendAllText(path, content, encoding);
+    }
+
+    public void WriteAllText(string path, string content, Encoding encoding)
+    {
+        File.WriteAllText(path, content, encoding);
     }
 }

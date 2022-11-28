@@ -1,7 +1,8 @@
 <Project>
  <PropertyGroup>
+   <SppVersioningMode>AutomaticLatestRevision</SppVersioningMode>
    <Deterministic>true</Deterministic>
-   <Version>4.0</Version>
+   <Version>4.1</Version>
    <OutputPath>bin/$(Configuration)</OutputPath>
    <Nullable>enable</Nullable>
    <LangVersion>preview</LangVersion>
@@ -16,5 +17,6 @@
    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
    <WarningsAsErrors />
+   <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
  </PropertyGroup>
 </Project>

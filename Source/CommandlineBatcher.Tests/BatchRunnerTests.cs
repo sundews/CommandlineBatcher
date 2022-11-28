@@ -11,11 +11,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using CommandlineBatcher.Diagnostics;
 using CommandlineBatcher.Internal;
 using FluentAssertions;
 using Moq;
+using Sundew.Base.Text;
 using Xunit;
 
 public class BatchRunnerTests
@@ -28,7 +30,7 @@ public class BatchRunnerTests
     {
         this.processRunner = New.Mock<IProcessRunner>();
         this.fileSystem = New.Mock<IFileSystem>();
-        this.testee = new BatchRunner(this.processRunner, this.fileSystem, new ConditionEvaluator(New.Mock<IConditionEvaluatorReporter>()),New.Mock<IBatchRunnerReporter>());
+        this.testee = new BatchRunner(this.processRunner, this.fileSystem, new ConditionEvaluator(New.Mock<IConditionEvaluatorReporter>()), New.Mock<IBatchRunnerReporter>());
         this.fileSystem.Setup(x => x.FileExists(It.IsAny<string>())).Returns(true);
     }
 
@@ -53,6 +55,31 @@ public class BatchRunnerTests
                 new List<Values> { new("1.0.1", "Sundew.CommandLine"), new("2.0.1", "Sundew.Base") }));
 
         result.Should().Equal(expected, (p1, p2) => p1.StartInfo.FileName == p2.StartInfo.FileName && p1.StartInfo.Arguments == p2.StartInfo.Arguments);
+    }
+
+    [Fact]
+    public async Task RunAsync_When_OutputtingToFile_Then_ExpectedTextShouldBeAppended()
+    {
+        processRunner.Setup(x => x.Run(It.IsAny<ProcessStartInfo>())).Returns<ProcessStartInfo>(
+            psi =>
+            {
+                var process = New.Mock<IProcess>();
+                process.SetupGet(x => x.StandardOutput).Returns(new StreamReader(new MemoryStream(Array.Empty<byte>())));
+                process.SetupGet(x => x.StartInfo).Returns(psi);
+                return process;
+            });
+
+        var result = await testee.RunAsync(
+            new BatchArguments(
+                new List<Command> { new(">> file.txt", @"Version={0}, Package={1} ""Package={1} Version={0}""{NL}") },
+                BatchSeparation.CommandLine,
+                null,
+                new List<Values> { new("1.0.1", "Sundew.CommandLine"), new("2.0.1", "Sundew.Base") },
+                fileEncoding: "utf8"));
+
+        const string ExpectedFile = "file.txt";
+        this.fileSystem.Verify(x => x.AppendAllText(ExpectedFile, $"Version=1.0.1, Package=Sundew.CommandLine \"Package=Sundew.CommandLine Version=1.0.1\"{Strings.NewLine}", It.Is<Encoding>(value => value.BodyName == Encoding.UTF8.BodyName)), Times.Once);
+        this.fileSystem.Verify(x => x.AppendAllText(ExpectedFile, $"Version=2.0.1, Package=Sundew.Base \"Package=Sundew.Base Version=2.0.1\"{Strings.NewLine}", It.Is<Encoding>(value => value.BodyName == Encoding.UTF8.BodyName)), Times.Once);
     }
 
     [Fact]
