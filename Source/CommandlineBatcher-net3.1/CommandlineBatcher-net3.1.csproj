@@ -10,6 +10,7 @@
     <Description>Execute batches of multiple commands in a single command line.</Description>
     <Version>$(RuntimeVersion).$(Version)</Version>
     <SppForceVersion>$(RuntimeVersion).$(GlobalVersion)</SppForceVersion>
+    <SppForceVersion Condition="'$(GlobalVersionRelease)' != ''">$(SppForceVersion)-$(GlobalVersionRelease)</SppForceVersion>
   </PropertyGroup>
 
   <ItemGroup>
