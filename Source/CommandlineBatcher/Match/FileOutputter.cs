@@ -15,11 +15,13 @@ using System.Threading.Tasks;
 public class FileOutputter : IOutputter
 {
     private readonly string outputPath;
+    private readonly bool appendToFile;
     private readonly Encoding encoding;
 
-    public FileOutputter(string outputPath, Encoding encoding)
+    public FileOutputter(string outputPath, bool appendToFile, Encoding encoding)
     {
         this.outputPath = outputPath;
+        this.appendToFile = appendToFile;
         this.encoding = encoding;
     }
 
@@ -30,6 +32,11 @@ public class FileOutputter : IOutputter
         if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
+        }
+
+        if (this.appendToFile)
+        {
+            return File.AppendAllTextAsync(this.outputPath, contents + Environment.NewLine, this.encoding);
         }
 
         return File.WriteAllTextAsync(this.outputPath, contents + Environment.NewLine, this.encoding);
