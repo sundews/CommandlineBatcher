@@ -2,7 +2,7 @@
  <PropertyGroup>
    <SppVersioningMode>AutomaticLatestRevision</SppVersioningMode>
    <Deterministic>true</Deterministic>
-   <Version>4.1</Version>
+   <Version>4.2</Version>
    <OutputPath>bin/$(Configuration)</OutputPath>
    <Nullable>enable</Nullable>
    <LangVersion>preview</LangVersion>
