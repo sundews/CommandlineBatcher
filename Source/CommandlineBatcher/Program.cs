@@ -53,7 +53,7 @@ class Program
 
         if (matchVerb.OutputPath != null)
         {
-            outputters.Add(new FileOutputter(matchVerb.OutputPath, EncodingHelper.GetEncoding(matchVerb.FileEncoding)));
+            outputters.Add(new FileOutputter(matchVerb.OutputPath, matchVerb.AppendToFile, EncodingHelper.GetEncoding(matchVerb.FileEncoding)));
         }
 
         IInputter inputter = matchVerb.UseStandardInput ? new ConsoleInputter() : new Inputter(matchVerb.Input!);

@@ -52,7 +52,7 @@ public class BatchArguments : IArguments
         this.ExecutionOrder = executionOrder;
         this.Verbosity = verbosity;
         this.FileEncoding = fileEncoding ?? Encoding.Default.BodyName;
-        this.FileEncoding = outputFilePath;
+        this.OutputFilePath = outputFilePath;
     }
 
     public BatchArguments()
