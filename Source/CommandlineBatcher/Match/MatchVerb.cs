@@ -101,7 +101,7 @@ Batches can also contain regex group names in the format {group-name}", true);
         argumentsBuilder.AddOptional("m", "merge-format", () => this.MergeFormat, s => this.MergeFormat = s, @"Indicates whether batches should be merged and specifies
 the format to be used for merging");
         argumentsBuilder.AddSwitch("nso", "skip-stdout-output", this.SkipConsoleOutput, b => this.SkipConsoleOutput = b, "Determines whether outputting to stdout should be skipped.");
-        argumentsBuilder.AddSwitch("a", "append", (s, b) => this.AppendToFile, s => this.AppendToFile = s, "Determines whether output is appended to specified output file.");
+        argumentsBuilder.AddSwitch("a", "append", this.AppendToFile, s => this.AppendToFile = s, "Determines whether output is appended to specified output file.");
         argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
         argumentsBuilder.AddOptional("wd", "working-directory", () => this.WorkingDirectory, s => this.WorkingDirectory = s, "The working directory", true, defaultValueText: "Current directory");
         argumentsBuilder.AddOptional("fe", "file-encoding", () => this.FileEncoding, s => this.FileEncoding = s, @$"The name of the encoding e.g. utf-8, utf-16/unicode.");
