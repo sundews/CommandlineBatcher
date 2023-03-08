@@ -53,13 +53,14 @@ jobs:
         --prerelease-format "u{DateTime}-{Stage}-{Postfix}"
         --metadata ${{ steps.build-setup.outputs.git-hash }}
         --force-version '"${{ secrets.SPP_FORCE_VERSION_IF_SET }}"'
+        --versioning-mode automatic-latest-revision
         --output-formats "Selected stage: {Stage}, {FullVersion}, {Configuration}" ">|stage={Stage}{NL}" ">|version={Version}{NL}" ">|buildConfiguration={Configuration}{NL}"
         ">|nuGetPackagesPath={WorkingDirectory}/NuGet{NL}" ">|dev-package-source-if-set={DevFeedSource}{NL}" ">|feedSource={FeedSource}{NL}"
         ">|pushSource={PushSource}{NL}" ">|apiKey={ApiKey}{NL}" ">|globalVersion={VersionMinor}.{VersionPatch}.{VersionRevision}{NL}" ">|globalVersionRelease={VersionRelease}{NL}" ">|symbolsPushSource={SymbolsPushSource}{NL}"
         ">|symbolsApiKey={SymbolsApiKey}{NL}"
         --output-file $GITHUB_OUTPUT
 
-        cb match -p "^refs/tags/release[^/]*$ => ::set-output name=isReleaseCommand::true" -i "${{ github.ref }}"
+        cb match -p "^refs/tags/release[^/]*$ => isReleaseCommand::true" -i "${{ github.ref }}" -a $GITHUB_OUTPUT
     - name: Restore
       run: dotnet restore ${{ env.solutionPath }} --verbosity normal -s ${{ env.source }}${{ steps.stage-build.outputs.dev-package-source-if-set }}
     - name: Build
