@@ -29,6 +29,7 @@ Help
      -m    | --merge-format          | Indicates whether batches should be merged and specifies                                           | Default: [none]
                                        the format to be used for merging
      -nso  | --skip-stdout-output    | Determines whether outputting to stdout should be skipped.
+     -ow   | --overwrite             | Determines whether output-path, if specified is overwritten.
      -lv   | --logging-verbosity     | Logging verbosity: [n]ormal, [e]rrors, [q]uiet, [d]etailed                                         | Default: normal
      -wd   | --working-directory     | The working directory                                                                              | Default: Current directory
      -fe   | --file-encoding         | The name of the encoding e.g. utf-8, utf-16/unicode.                                               | Default: utf-8
@@ -63,7 +64,7 @@ Help
                                        Specify "all" for number of cores.
   -p       | --parallelize           | Specifies whether commands or batches run in parallel: [c]ommands, [b]atches                       | Default: commands
   -lv      | --logging-verbosity     | Logging verbosity: [n]ormal, [e]rrors, [q]uiet, [d]etailed                                         | Default: normal
-  -fe      | --file-encoding         | The name of the encoding e.g. utf-8, utf-16/unicode.                                               | Default: [none]
+  -fe      | --file-encoding         | The name of the encoding e.g. utf-8, utf-16/unicode.                                               | Default: utf-8
   <output-path>                      | The file path to redirect output for commands that do not specify a file path or a program to run. | Default: [none]
 ```
 
