@@ -53,7 +53,7 @@ jobs:
         --prerelease-format "u{DateTime}-{Stage}-{Postfix}"
         --metadata ${{ steps.build-setup.outputs.git-hash }}
         --force-version '"${{ secrets.SPP_FORCE_VERSION_IF_SET }}"'
-        --versioning-mode automatic-latest-patch
+        --versioning-mode automatic-latest-revision
         --output-formats "Selected stage: {Stage}, {FullVersion}, {Configuration}" ">|stage={Stage}{NL}" ">|version={Version}{NL}" ">|buildConfiguration={Configuration}{NL}"
         ">|nuGetPackagesPath={WorkingDirectory}/NuGet{NL}" ">|dev-package-source-if-set={DevFeedSource}{NL}" ">|feedSource={FeedSource}{NL}"
         ">|pushSource={PushSource}{NL}" ">|apiKey={ApiKey}{NL}" ">|globalVersion={VersionMinor}.{VersionPatch}.{VersionRevision}{NL}" ">|globalVersionRelease={VersionRelease}{NL}" ">|symbolsPushSource={SymbolsPushSource}{NL}"
