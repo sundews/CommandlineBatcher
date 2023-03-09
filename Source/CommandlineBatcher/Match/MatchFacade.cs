@@ -9,6 +9,7 @@ namespace CommandlineBatcher.Match;
 
 using CommandlineBatcher.Internal;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -37,60 +38,76 @@ public class MatchFacade
     {
         try
         {
-            var input = await this.inputter.GetInputAsync();
-
-            var patternsRegex = new Regex(string.Format(PatternRegexFormat, matchVerb.BatchSeparator), RegexOptions.ExplicitCapture);
-            var patternMatches = matchVerb.Patterns.Select(x =>
-            {
-                var pattern = patternsRegex.Match(x);
-                var patternText = pattern.Groups[MatchRegex].Value;
-                return (regex: new Regex(patternText), values: pattern.Groups[Values].Captures.Select(capture => capture.Value).ToArray(), pattern: patternText);
-            });
-
+            var inputs = await this.inputter.GetInputAsync();
+            var stringBuilder = new StringBuilder();
             var shouldMerge = matchVerb.MergeFormat != null || matchVerb.MergeDelimiter != null;
-            var matchAndValues = patternMatches.Select(tuple => (match: tuple.regex.Match(input), tuple.regex, tuple.values, tuple.pattern)).FirstOrDefault(tuple => tuple.match.Success);
-            if (matchAndValues != default)
+            foreach (var input in inputs)
             {
-                this.matchReporter.Report($"The input: {input} matched: {matchAndValues.pattern}");
-                if (matchAndValues.values.Length == 0)
+                var patternsRegex = new Regex(string.Format(PatternRegexFormat, matchVerb.BatchSeparator),
+                    RegexOptions.ExplicitCapture);
+                var patterns = matchVerb.Patterns.Select(x =>
                 {
-                    return 0;
-                }
+                    var pattern = patternsRegex.Match(x);
+                    var patternText = pattern.Groups[MatchRegex].Value;
+                    return (regex: new Regex(patternText),
+                        values: pattern.Groups[Values].Captures.Select(capture => capture.Value).ToArray(),
+                        pattern: patternText);
+                });
 
-                var workingDirectory = string.IsNullOrEmpty(matchVerb.WorkingDirectory) ? this.fileSystem.GetCurrentDirectory() : Path.GetFullPath(matchVerb.WorkingDirectory);
-                var stringBuilder = new StringBuilder();
-                Formatter.AppendFormat(stringBuilder, matchVerb.Format, matchAndValues.values[0], matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator, workingDirectory);
-                if (string.IsNullOrEmpty(matchVerb.MergeFormat))
+                var matchesWithValues = patterns
+                    .Select(tuple => (match: tuple.regex.Match(input), tuple.regex, tuple.values, tuple.pattern))
+                    .Where(tuple => tuple.match.Success).ToList();
+                foreach (var matchAndValues in matchesWithValues)
                 {
-                    await this.outputter.OutputAsync(stringBuilder.ToString());
-                    stringBuilder.Clear();
-                }
+                    this.matchReporter.Report($"The input: {input} matched: {matchAndValues.pattern}");
+                    if (matchAndValues.values.Length == 0)
+                    {
+                        continue;
+                    }
 
-                for (var index = 1; index < matchAndValues.values.Length; index++)
-                {
-                    var value = matchAndValues.values[index];
-                    if (matchVerb.MergeDelimiter != null)
+                    var workingDirectory = string.IsNullOrEmpty(matchVerb.WorkingDirectory)
+                        ? this.fileSystem.GetCurrentDirectory()
+                        : Path.GetFullPath(matchVerb.WorkingDirectory);
+
+                    if (stringBuilder.Length > 0 && matchVerb.MergeDelimiter != null)
                     {
                         stringBuilder.Append(matchVerb.MergeDelimiter);
                     }
 
-                    Formatter.AppendFormat(stringBuilder, matchVerb.Format, value, matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator, workingDirectory);
-                    if (!shouldMerge)
+                    stringBuilder.AppendFormatted(matchVerb.Format, matchAndValues.values[0],
+                        matchAndValues.regex, matchAndValues.match.Groups, matchVerb.BatchValueSeparator,
+                        workingDirectory);
+
+                    if (string.IsNullOrEmpty(matchVerb.MergeFormat))
                     {
                         await this.outputter.OutputAsync(stringBuilder.ToString());
                         stringBuilder.Clear();
                     }
-                }
 
-                if (matchVerb.MergeFormat != null)
-                {
-                    await this.outputter.OutputAsync(string.Format(matchVerb.MergeFormat, stringBuilder));
-                    stringBuilder.Clear();
+                    for (var index = 1; index < matchAndValues.values.Length; index++)
+                    {
+                        if (stringBuilder.Length > 0 && matchVerb.MergeDelimiter != null)
+                        {
+                            stringBuilder.Append(matchVerb.MergeDelimiter);
+                        }
+
+                        var value = matchAndValues.values[index];
+                        stringBuilder.AppendFormatted(matchVerb.Format, value, matchAndValues.regex,
+                            matchAndValues.match.Groups, matchVerb.BatchValueSeparator, workingDirectory);
+                        if (!shouldMerge)
+                        {
+                            await this.outputter.OutputAsync(stringBuilder.ToString());
+                            stringBuilder.Clear();
+                        }
+                    }
                 }
             }
-            else
+
+            if (shouldMerge)
             {
-                this.matchReporter.Report($"The input: {input} did not match any pattern.");
+                var mergeFormat = matchVerb.MergeFormat ?? "{0}";
+                await this.outputter.OutputAsync(string.Format(mergeFormat, stringBuilder));
+                stringBuilder.Clear();
             }
 
             return 0;

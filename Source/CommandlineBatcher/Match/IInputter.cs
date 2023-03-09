@@ -7,9 +7,10 @@
 
 namespace CommandlineBatcher.Match;
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public interface IInputter
 {
-    Task<string> GetInputAsync();
+    Task<IReadOnlyList<string>> GetInputAsync();
 }

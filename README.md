@@ -20,7 +20,7 @@ Help
                                        Batches may consist of multiple values, separated by the value-separator
                                        Batches can also contain regex group names in the format {group-name}
      Input                                                                                                                                | Required
-      -i   | --input                 | The input to be matched                                                                            | Default: [none]
+      -i   | --inputs                | The inputs to be matched                                                                           | Default: [none]
       -isi | --input-stdin           | Indicates that the input should be read from standard input
      -f    | --format                | The format to apply to each batch.                                                                 | Default: [none]
      -bs   | --batch-separator       | The character used to split batches.                                                               | Default: |

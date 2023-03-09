@@ -223,8 +223,8 @@ public class BatchRunner
         return result switch
         {
             StringFormatted stringFormatted => (stringFormatted.Result, true),
-            FormatContainedUnknownNames formatContainedUnknownNames => (formatContainedUnknownNames.Names.JoinToStringBuilder(new StringBuilder(UnknownNames), (builder, name) => builder.Append(name), separator).ToString(), false),
-            ArgumentsContainedNullValues argumentsContainedNullValues => (argumentsContainedNullValues.NullArguments.JoinToStringBuilder(new StringBuilder(IndicesContainedNullValues), (builder, namedIndex) => builder.Append($"{namedIndex.Name}({namedIndex.Index})"), separator).ToString(), false),
+            FormatContainedUnknownNames formatContainedUnknownNames => (new StringBuilder(UnknownNames).AppendItems(formatContainedUnknownNames.Names, (builder, name) => builder.Append(name), separator).ToString(), false),
+            ArgumentsContainedNullValues argumentsContainedNullValues => (new StringBuilder(IndicesContainedNullValues).AppendItems(argumentsContainedNullValues.NullArguments, (builder, namedIndex) => builder.Append($"{namedIndex.Name}({namedIndex.Index})"), separator).ToString(), false),
         };
     }
 }

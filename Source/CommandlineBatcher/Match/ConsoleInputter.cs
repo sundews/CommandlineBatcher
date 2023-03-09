@@ -8,12 +8,13 @@
 namespace CommandlineBatcher.Match;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class ConsoleInputter : IInputter
 {
-    public Task<string> GetInputAsync()
+    public async Task<IReadOnlyList<string>> GetInputAsync()
     {
-        return Console.In.ReadToEndAsync();
+        return new[] { await Console.In.ReadToEndAsync() };
     }
 }

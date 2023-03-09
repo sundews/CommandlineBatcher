@@ -13,10 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sundew.Base.Memory" Version="8.3.3" />
-    <PackageReference Include="Sundew.Base.Text" Version="8.3.3" />
-    <PackageReference Include="Sundew.CommandLine" Version="9.0.8" />
-    <PackageReference Include="Sundew.DiscriminatedUnions" Version="2.0.4" />
+    <PackageReference Include="Sundew.Base.Memory" Version="9.0.0-u20230309-201702-local" />
+    <PackageReference Include="Sundew.Base.Text" Version="9.0.0-u20230309-201702-local" />
+    <PackageReference Include="Sundew.CommandLine" Version="10.0.0-u20230309-201835-local" />
+    <PackageReference Include="Sundew.DiscriminatedUnions" Version="3.0.1-u20230309-201509-local" />
     <PackageReference Include="Sundew.Packaging.Publish" Version="8.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

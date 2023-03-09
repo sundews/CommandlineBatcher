@@ -29,7 +29,7 @@ class Program
         return result.Value;
     }
 
-    private static async ValueTask<Result<int, ParserError<int>>> Handle(BatchArguments arguments)
+    private static async ValueTask<R<int, ParserError<int>>> Handle(BatchArguments arguments)
     {
         var consoleReporter = new ConsoleReporter(arguments.Verbosity);
         var batchRunner = new BatchRunner(new ProcessRunner(), new FileSystem(), new ConditionEvaluator(consoleReporter), consoleReporter);
@@ -40,10 +40,10 @@ class Program
             consoleReporter.Error(process);
         }
 
-        return Result.From(failedProcesses.Count == 0, 0, new ParserError<int>(-1));
+        return R.From(failedProcesses.Count == 0, 0, new ParserError<int>(-1));
     }
 
-    private static async ValueTask<Result<int, ParserError<int>>> ExecuteMatchAsync(MatchVerb matchVerb)
+    private static async ValueTask<R<int, ParserError<int>>> ExecuteMatchAsync(MatchVerb matchVerb)
     {
         var outputters = new List<IOutputter>();
         if (!matchVerb.SkipConsoleOutput)
@@ -56,8 +56,8 @@ class Program
             outputters.Add(new FileOutputter(matchVerb.OutputPath, matchVerb.Overwrite, EncodingHelper.GetEncoding(matchVerb.FileEncoding)));
         }
 
-        IInputter inputter = matchVerb.UseStandardInput ? new ConsoleInputter() : new Inputter(matchVerb.Input!);
+        IInputter inputter = matchVerb.UseStandardInput ? new ConsoleInputter() : new Inputter(matchVerb.Inputs);
         var matchFacade = new MatchFacade(inputter, new AggregateOutputter(outputters), new FileSystem(), new ConsoleReporter(matchVerb.Verbosity));
-        return Result.Success(await matchFacade.MatchAsync(matchVerb));
+        return R.Success(await matchFacade.MatchAsync(matchVerb));
     }
 }

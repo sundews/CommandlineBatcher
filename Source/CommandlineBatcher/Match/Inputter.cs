@@ -7,18 +7,19 @@
 
 namespace CommandlineBatcher.Match;
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class Inputter : IInputter
 {
-    private readonly string input;
+    private readonly IReadOnlyList<string> input;
 
-    public Inputter(string input)
+    public Inputter(IReadOnlyList<string> input)
     {
         this.input = input;
     }
 
-    public Task<string> GetInputAsync()
+    public Task<IReadOnlyList<string>> GetInputAsync()
     {
         return Task.FromResult(input);
     }

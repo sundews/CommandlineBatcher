@@ -41,7 +41,8 @@ public class MatchFacadeTests
     [InlineData("invalid", new string[0])]
     public async Task MatchAsync_When_UsingInputAndFormatWithSpaces_Then_OutputterShouldBeCalledWithExpectedOutputs(string input, string[] expectedOutputs)
     {
-        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(input);
+        var inputs = new[] { input };
+        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(inputs);
         var patterns = new List<string>
         {
             @"(?:master|main).*                                          => stage=production|buildConfiguration=Release",
@@ -49,7 +50,7 @@ public class MatchFacadeTests
             @"(?:develop.*|feature/(?<Postfix>.+)|bugfix/(?<Postfix>.+)) => stage=development|buildConfiguration=Debug|Postfix={Postfix}|dev-package-source-if-set= -s https://www.myget.org/F/sundew-dev/api/v3/index.json"
         };
 
-        var result = await this.testee.MatchAsync(new MatchVerb(patterns, input, false, "::set-output name={0}::{1}", null, '='));
+        var result = await this.testee.MatchAsync(new MatchVerb(patterns, inputs, false, "::set-output name={0}::{1}", null, '='));
 
         result.Should().Be(0);
         expectedOutputs.ForEach(x => this.outputter.Verify(outputter => outputter.OutputAsync(x), Times.Once));
@@ -63,7 +64,8 @@ public class MatchFacadeTests
     [InlineData("invalid", new string[0])]
     public async Task MatchAsync_When_UsingInputAndFormat_Then_OutputterShouldBeCalledWithExpectedOutputs(string input, string[] expectedOutputs)
     {
-        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(input);
+        var inputs = new[] { input };
+        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(inputs);
         var patterns = new List<string>
         {
             @"(?:master|main).*=> stage=production|buildConfiguration=Release",
@@ -71,7 +73,7 @@ public class MatchFacadeTests
             @"(?:develop.*|feature/(?<Postfix>.+)|bugfix/(?<Postfix>.+)) => stage=development|buildConfiguration=Debug|Postfix={Postfix}|dev-package-source-if-set= -s https://www.myget.org/F/sundew-dev/api/v3/index.json"
         };
 
-        var result = await this.testee.MatchAsync(new MatchVerb(patterns, input, false, "::set-output name={0}::{1}", null, '='));
+        var result = await this.testee.MatchAsync(new MatchVerb(patterns, inputs, false, "::set-output name={0}::{1}", null, '='));
 
         result.Should().Be(0);
         expectedOutputs.ForEach(x => this.outputter.Verify(outputter => outputter.OutputAsync(x), Times.Once));
@@ -84,7 +86,8 @@ public class MatchFacadeTests
     [InlineData("3", new[] { "3+3=6" })]
     public async Task MatchAsync_When_UsingInputAndSimpleMapAndFormat_Then_OutputterShouldBeCalledWithExpectedOutputs(string input, string[] expectedOutputs)
     {
-        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(input);
+        var inputs = new[] { input };
+        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(inputs);
         var patterns = new List<string>
         {
             @"1 => 1=4",
@@ -92,7 +95,7 @@ public class MatchFacadeTests
             @"3 => 3=6"
         };
 
-        var result = await this.testee.MatchAsync(new MatchVerb(patterns, input, false, "{0}+3={1}", null, '='));
+        var result = await this.testee.MatchAsync(new MatchVerb(patterns, inputs, false, "{0}+3={1}", null, '='));
 
         result.Should().Be(0);
         expectedOutputs.ForEach(x => this.outputter.Verify(outputter => outputter.OutputAsync(x), Times.Once));
@@ -106,13 +109,14 @@ public class MatchFacadeTests
     [InlineData(@"'1 ' =>4 dogs,5 cats,6 frogs", "1 ", "I have 4 dogs, 5 cats and 6 frogs at home")]
     public async Task MatchAsync_When_UsingInputAndSimpleMap_Then_OutputterShouldBeCalledWithExpectedOutput(string pattern, string input, string expectedOutput)
     {
-        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(input);
+        var inputs = new[] { input };
+        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(inputs);
         var patterns = new List<string>
         {
             pattern,
         };
 
-        var result = await this.testee.MatchAsync(new MatchVerb(patterns, input, false, "I have {0}, {1} and {2} at home"));
+        var result = await this.testee.MatchAsync(new MatchVerb(patterns, inputs, false, "I have {0}, {1} and {2} at home"));
 
         result.Should().Be(0);
         this.outputter.Verify(outputter => outputter.OutputAsync(expectedOutput), Times.Once);
@@ -125,13 +129,14 @@ public class MatchFacadeTests
     [InlineData(@"3' =>,with qoute at the end", "3'", "result with qoute at the end")]
     public async Task MatchAsync_When_UsingQuote_Then_OutputterShouldBeCalledWithExpectedOutput(string pattern, string input, string expectedOutput)
     {
-        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(input);
+        var inputs = new[] { input };
+        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(inputs);
         var patterns = new List<string>
         {
             pattern,
         };
 
-        var result = await this.testee.MatchAsync(new MatchVerb(patterns, input, false, "{0}result {1}"));
+        var result = await this.testee.MatchAsync(new MatchVerb(patterns, inputs, false, "{0}result {1}"));
 
         result.Should().Be(0);
         this.outputter.Verify(outputter => outputter.OutputAsync(expectedOutput), Times.Once);
@@ -141,17 +146,55 @@ public class MatchFacadeTests
     [Fact]
     public async Task MatchAsync_When_UsingInputAndSimpleMapAndUsingMergeFormat_Then_OutputterShouldBeCalledWithExpectedOutputs()
     {
-        const string ExpectedOutput = "I have 4 dogs, 5 cats, 6 frogs at home";
-        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(DefaultInput);
+        const string ExpectedOutput = "I have 4 dogs, 5 cats, 6 frogs, 25 birds, 8 cows at home";
+        var inputs = new[] { DefaultInput, "25" };
+        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(inputs);
         var patterns = new List<string>
         {
             @"1 => 4 dogs|5 cats|6 frogs",
+            @"(?<Bird>\d\d) => {Bird} birds|8 cows",
         };
 
-        var result = await this.testee.MatchAsync(new MatchVerb(patterns, DefaultInput, false, null, mergeDelimiter: ", ", mergeFormat: "I have {0} at home"));
+        var result = await this.testee.MatchAsync(new MatchVerb(patterns, inputs, false, null, mergeDelimiter: ", ", mergeFormat: "I have {0} at home"));
 
         result.Should().Be(0);
         this.outputter.Verify(outputter => outputter.OutputAsync(ExpectedOutput), Times.Once);
+        this.outputter.VerifyNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData(new[] { "1", "2", "3" }, new[] { "1+3=4", "2+3=5", "3+3=6" })]
+    public async Task MatchAsync_When_UsingInputsAndSimpleMapAndFormat_Then_OutputterShouldBeCalledWithExpectedOutputs(string[] inputs, string[] expectedOutputs)
+    {
+        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(inputs);
+        var patterns = new List<string>
+        {
+            @"1 => 1=4",
+            @"2 => 2=5",
+            @"3 => 3=6"
+        };
+
+        var result = await this.testee.MatchAsync(new MatchVerb(patterns, inputs, false, "{0}+3={1}", null, '='));
+
+        result.Should().Be(0);
+        expectedOutputs.ForEach(x => this.outputter.Verify(outputter => outputter.OutputAsync(x), Times.Once));
+        this.outputter.VerifyNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData(new[] { "1", "2", "3" }, new[] { "1+3=MoreThanOne", "2+3=MoreThanOne", "3+3=MoreThanOne" })]
+    public async Task MatchAsync_When_UsingInputsAndRegexMapAndFormat_Then_OutputterShouldBeCalledWithExpectedOutputs(string[] inputs, string[] expectedOutputs)
+    {
+        this.inputter.Setup(x => x.GetInputAsync()).ReturnsAsync(inputs);
+        var patterns = new List<string>
+        {
+            @"(?<Value>1|2|3) => {Value}=MoreThanOne",
+        };
+
+        var result = await this.testee.MatchAsync(new MatchVerb(patterns, inputs, false, "{0}+3={1}", null, '='));
+
+        result.Should().Be(0);
+        expectedOutputs.ForEach(x => this.outputter.Verify(outputter => outputter.OutputAsync(x), Times.Once));
         this.outputter.VerifyNoOtherCalls();
     }
 }

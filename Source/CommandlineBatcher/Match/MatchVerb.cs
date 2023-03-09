@@ -9,12 +9,14 @@ namespace CommandlineBatcher.Match;
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Sundew.CommandLine;
 
 public class MatchVerb : IVerb
 {
     private readonly List<string> patterns;
+    private readonly List<string> inputs;
 
     public MatchVerb()
         : this(new List<string>(), null!)
@@ -23,7 +25,7 @@ public class MatchVerb : IVerb
 
     public MatchVerb(
         List<string> patterns, 
-        string? input, 
+        IReadOnlyList<string> inputs, 
         bool useStandardInput = false, 
         string? format = null, 
         char? batchSeparator = null, 
@@ -38,7 +40,7 @@ public class MatchVerb : IVerb
         this.patterns = patterns;
         this.BatchSeparator = batchSeparator ?? '|';
         this.BatchValueSeparator = batchValueSeparator ?? ',';
-        this.Input = input;
+        this.inputs = inputs as List<string> ?? inputs.ToList();
         this.UseStandardInput = useStandardInput;
         this.Format = format;
         this.MergeDelimiter = mergeDelimiter;
@@ -51,7 +53,7 @@ public class MatchVerb : IVerb
 
     public IReadOnlyList<string> Patterns => this.patterns;
 
-    public string? Input { get; private set; }
+    public IReadOnlyList<string> Inputs => this.inputs;
 
     public bool UseStandardInput { get; private set; }
 
@@ -91,8 +93,8 @@ public class MatchVerb : IVerb
 Format: {pattern} => {batch}[,batch]*
 Batches may consist of multiple values, separated by the value-separator
 Batches can also contain regex group names in the format {group-name}", true);
-        argumentsBuilder.RequireAnyOf("Input", builder => builder
-            .Add("i", "input", () => this.Input, s => this.Input = s, "The input to be matched", true)
+        argumentsBuilder.RequireAnyOf("Inputs", builder => builder
+            .AddList("i", "inputs", this.inputs, "The input to be matched", true)
             .AddSwitch("isi", "input-stdin", this.UseStandardInput, b => this.UseStandardInput = b, "Indicates that the input should be read from standard input"));
         argumentsBuilder.AddOptional("f", "format", () => this.Format, s => this.Format = s, "The format to apply to each batch.");
         argumentsBuilder.AddOptional("bs", "batch-separator", () => this.BatchSeparator.ToString(), s => this.BatchSeparator = s[0], "The character used to split batches.");
@@ -105,6 +107,6 @@ the format to be used for merging");
         argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
         argumentsBuilder.AddOptional("wd", "working-directory", () => this.WorkingDirectory, s => this.WorkingDirectory = s, "The working directory", true, defaultValueText: "Current directory");
         argumentsBuilder.AddOptional("fe", "file-encoding", () => this.FileEncoding, s => this.FileEncoding = s, @$"The name of the encoding e.g. utf-8, utf-16/unicode.");
-        argumentsBuilder.AddOptionalValue("output-path", () => this.OutputPath, s => this.OutputPath = s, "The output path, if not specified application will output to stdout");
+        argumentsBuilder.AddOptional("op", "output-path", () => this.OutputPath, s => this.OutputPath = s, "The output path, if not specified application will output to stdout");
     }
 }

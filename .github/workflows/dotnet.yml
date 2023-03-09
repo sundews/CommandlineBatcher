@@ -60,7 +60,7 @@ jobs:
         ">|symbolsApiKey={SymbolsApiKey}{NL}"
         --output-file $GITHUB_OUTPUT
 
-        cb match -p "^refs/tags/release[^/]*$ => isReleaseCommand=true" -i "${{ github.ref }}" -a $GITHUB_OUTPUT
+        cb match -p "^refs/tags/release[^/]*$ => isReleaseCommand=true" -i "${{ github.base_ref }}" -a $GITHUB_OUTPUT
     - name: Restore
       run: dotnet restore ${{ env.solutionPath }} --verbosity normal -s ${{ env.source }}${{ steps.stage-build.outputs.dev-package-source-if-set }}
     - name: Build

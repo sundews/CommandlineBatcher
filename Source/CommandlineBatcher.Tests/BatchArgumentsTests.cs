@@ -14,7 +14,7 @@ public class BatchArgumentsTests
     public void Parse_Then_ArgumentsShouldBeParsed(Data data)
     {
         var testee = new CommandLineParser<int, int>();
-        var arguments = testee.WithArguments(new BatchArguments(), arguments => Result.Success(0));
+        var arguments = testee.WithArguments(new BatchArguments(), arguments => R.Success(0));
 
         testee.Parse(data.CommandLine);
 

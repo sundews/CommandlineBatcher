@@ -8,7 +8,6 @@
 namespace CommandlineBatcher.Match;
 
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.RegularExpressions;
 using Sundew.Base.Collections;
@@ -25,7 +24,7 @@ public static class Formatter
     private const string DoubleQuoteName = "{DQ}";
     private const string DoubleQuote = "\"";
 
-    public static void AppendFormat(StringBuilder stringBuilder, string? format, string value, Regex regex, GroupCollection matchGroups, char batchValueSeparator, string workingDirectory)
+    public static StringBuilder AppendFormatted(this StringBuilder stringBuilder, string? format, string value, Regex regex, GroupCollection matchGroups, char batchValueSeparator, string workingDirectory)
     {
         format = ReplaceKnownCharacters(format, workingDirectory);
         value = ReplaceKnownCharacters(value, workingDirectory)!;
@@ -46,7 +45,7 @@ public static class Formatter
         if (format == null)
         {
             stringBuilder.Append(value);
-            return;
+            return stringBuilder;
         }
 
         var lastWasInSeparator = false;
@@ -83,7 +82,7 @@ public static class Formatter
             },
             SplitOptions.None).ToArray(x => x.ToString());
 
-        stringBuilder.AppendFormat(format, values);
+        return stringBuilder.AppendFormat(format, values);
     }
 
     private static string? ReplaceKnownCharacters(string? value, string currentDirectory)
