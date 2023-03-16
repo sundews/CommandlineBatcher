@@ -32,7 +32,7 @@ public class MatchVerb : IVerb
         char? batchValueSeparator = null,
         string? mergeDelimiter = null, 
         string? mergeFormat = null,
-        string? outputPath = null,
+        string? outputFile = null,
         bool skipConsoleOutput = false,
         string? workingDirectory = null,
         string? fileEncoding = null)
@@ -44,7 +44,7 @@ public class MatchVerb : IVerb
         this.UseStandardInput = useStandardInput;
         this.Format = format;
         this.MergeDelimiter = mergeDelimiter;
-        this.OutputPath = outputPath;
+        this.OutputFile = outputFile;
         this.SkipConsoleOutput = skipConsoleOutput;
         this.MergeFormat = mergeFormat;
         this.WorkingDirectory = workingDirectory ?? Directory.GetCurrentDirectory();
@@ -65,7 +65,7 @@ public class MatchVerb : IVerb
 
     public string? MergeDelimiter { get; private set; }
 
-    public string? OutputPath { get; private set; }
+    public string? OutputFile { get; private set; }
 
     public string? MergeFormat { get; private set; }
 
@@ -107,6 +107,6 @@ the format to be used for merging");
         argumentsBuilder.AddOptionalEnum("lv", "logging-verbosity", () => this.Verbosity, v => this.Verbosity = v, "Logging verbosity: {0}");
         argumentsBuilder.AddOptional("wd", "working-directory", () => this.WorkingDirectory, s => this.WorkingDirectory = s, "The working directory", true, defaultValueText: "Current directory");
         argumentsBuilder.AddOptional("fe", "file-encoding", () => this.FileEncoding, s => this.FileEncoding = s, @$"The name of the encoding e.g. utf-8, utf-16/unicode.");
-        argumentsBuilder.AddOptional("op", "output-path", () => this.OutputPath, s => this.OutputPath = s, "The output path, if not specified application will output to stdout");
+        argumentsBuilder.AddOptional("of", "output-file", () => this.OutputFile, s => this.OutputFile = s, "The output file, if not specified application will output to stdout");
     }
 }

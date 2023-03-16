@@ -51,9 +51,9 @@ class Program
             outputters.Add(new ConsoleOutputter());
         }
 
-        if (matchVerb.OutputPath != null)
+        if (matchVerb.OutputFile != null)
         {
-            outputters.Add(new FileOutputter(matchVerb.OutputPath, matchVerb.Overwrite, EncodingHelper.GetEncoding(matchVerb.FileEncoding)));
+            outputters.Add(new FileOutputter(matchVerb.OutputFile, matchVerb.Overwrite, EncodingHelper.GetEncoding(matchVerb.FileEncoding)));
         }
 
         IInputter inputter = matchVerb.UseStandardInput ? new ConsoleInputter() : new Inputter(matchVerb.Inputs);
