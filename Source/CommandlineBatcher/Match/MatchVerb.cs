@@ -19,7 +19,7 @@ public class MatchVerb : IVerb
     private readonly List<string> inputs;
 
     public MatchVerb()
-        : this(new List<string>(), null!)
+        : this(new List<string>(), new List<string>())
     {
     }
 
