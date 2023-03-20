@@ -9,6 +9,7 @@
    <Company>Hukano</Company>
    <Authors>Kim Hugener-Ohlsen</Authors>
    <Copyright>Kim Hugener-Ohlsen</Copyright>
+   <PackageReadmeFile>docs/README.md</PackageReadmeFile>
    <RepositoryUrl>https://github.com/sundews/CommandlineBatcher</RepositoryUrl>
    <PackageProjectUrl>https://github.com/sundews/CommandlineBatcher</PackageProjectUrl>
    <RepositoryType>git</RepositoryType>
@@ -19,4 +20,7 @@
    <WarningsAsErrors />
    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\docs"/>
+  </ItemGroup>
 </Project>
