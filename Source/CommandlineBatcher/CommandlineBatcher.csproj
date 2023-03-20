@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Sundew.Base.Memory" Version="9.0.1" />
     <PackageReference Include="Sundew.Base.Text" Version="9.0.1" />
-    <PackageReference Include="Sundew.CommandLine" Version="10.0.0" />
+    <PackageReference Include="Sundew.CommandLine" Version="10.0.1" />
     <PackageReference Include="Sundew.DiscriminatedUnions" Version="3.0.3" />
     <PackageReference Include="Sundew.Packaging.Publish" Version="8.1.1">
       <PrivateAssets>all</PrivateAssets>
