@@ -20,7 +20,7 @@ class Program
         commandLineParser.WithArguments(new BatchArguments(), Handle);
 
         var result = await commandLineParser.ParseAsync(Environment.CommandLine, 1);
-        if (!result)
+        if (!result.IsSuccess)
         {
             result.WriteToConsole();
             return result.Error.Info;

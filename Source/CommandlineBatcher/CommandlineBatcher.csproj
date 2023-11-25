@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RuntimeVersion>7</RuntimeVersion>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-    <PackAsTool>true</PackAsTool>
+    <RuntimeVersion>8</RuntimeVersion>
+    <TargetFramework>net$(RuntimeVersion).0</TargetFramework>
+	<PackAsTool>true</PackAsTool>
     <ToolCommandName>cb</ToolCommandName>
     <Description>Execute batches of multiple commands in a single command line.</Description>
     <Version>$(RuntimeVersion).$(Version)</Version>
@@ -13,11 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sundew.Base.Memory" Version="9.0.1" />
-    <PackageReference Include="Sundew.Base.Text" Version="9.0.1" />
-    <PackageReference Include="Sundew.CommandLine" Version="10.0.1" />
-    <PackageReference Include="Sundew.DiscriminatedUnions" Version="3.0.3" />
-    <PackageReference Include="Sundew.Packaging.Publish" Version="8.1.1">
+    <PackageReference Include="Sundew.Base.Memory" Version="11.0.0" />
+    <PackageReference Include="Sundew.Base.Text" Version="11.0.0" />
+    <PackageReference Include="Sundew.CommandLine" Version="10.0.3" />
+    <PackageReference Include="Sundew.DiscriminatedUnions" Version="5.0.0" />
+    <PackageReference Include="Sundew.Packaging.Publish" Version="8.2.5-u20231125-150101-ci">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
