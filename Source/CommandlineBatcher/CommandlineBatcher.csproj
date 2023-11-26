@@ -17,7 +17,7 @@
     <PackageReference Include="Sundew.Base.Text" Version="11.0.0" />
     <PackageReference Include="Sundew.CommandLine" Version="10.0.3" />
     <PackageReference Include="Sundew.DiscriminatedUnions" Version="5.0.0" />
-    <PackageReference Include="Sundew.Packaging.Publish" Version="8.2.5-u20231125-150101-ci">
+    <PackageReference Include="Sundew.Packaging.Publish" Version="8.2.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
