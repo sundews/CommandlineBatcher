@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using Sundew.Base.Primitives.Numeric;
+using Sundew.Base.Numeric;
 using Sundew.Base.Text;
 using Sundew.CommandLine;
 

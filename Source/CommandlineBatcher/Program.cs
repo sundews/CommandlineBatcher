@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using CommandlineBatcher.Diagnostics;
 using CommandlineBatcher.Internal;
 using CommandlineBatcher.Match;
-using Sundew.Base.Primitives.Computation;
+using Sundew.Base;
 using Sundew.CommandLine;
 
 class Program

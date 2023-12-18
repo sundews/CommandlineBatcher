@@ -13,11 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sundew.Base.Memory" Version="11.0.5" />
-    <PackageReference Include="Sundew.Base.Text" Version="11.0.5" />
-    <PackageReference Include="Sundew.CommandLine" Version="10.0.6" />
-    <PackageReference Include="Sundew.DiscriminatedUnions" Version="5.1.0" />
-    <PackageReference Include="Sundew.Packaging.Publish" Version="10.0.2">
+    <PackageReference Include="Sundew.Base.Memory" Version="12.0.2" />
+    <PackageReference Include="Sundew.Base.Text" Version="12.0.2" />
+    <PackageReference Include="Sundew.CommandLine" Version="10.0.8" />
+    <PackageReference Include="Sundew.DiscriminatedUnions" Version="5.2.2" />
+    <PackageReference Include="Sundew.Packaging.Publish" Version="10.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

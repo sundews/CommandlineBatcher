@@ -3,7 +3,7 @@ namespace CommandlineBatcher.Tests;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using Sundew.Base.Primitives.Computation;
+using Sundew.Base;
 using Sundew.CommandLine;
 using Xunit;
 
