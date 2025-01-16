@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <RuntimeVersion>9</RuntimeVersion>
+    <RuntimeVersion>8</RuntimeVersion>
     <TargetFramework>net$(RuntimeVersion).0</TargetFramework>
-	<PackAsTool>true</PackAsTool>
+    <PackAsTool>true</PackAsTool>
+    <AssemblyName>CommandlineBatcher</AssemblyName>
     <ToolCommandName>cb</ToolCommandName>
     <Description>Execute batches of multiple commands in a single command line.</Description>
     <Version>$(RuntimeVersion).$(Version)</Version>
@@ -21,5 +22,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\CommandlineBatcher\**\*.cs" />
+    <Compile Remove="..\CommandlineBatcher\obj\**" />
+    <Compile Remove="..\CommandlineBatcher\bin\**" />
   </ItemGroup>
 </Project>
